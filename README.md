@@ -1,0 +1,183 @@
+# ETL Monitoring Project
+
+This project consists of a React frontend and FastAPI backend for monitoring ETL (Extract, Transform, Load) processes. The application provides real-time monitoring, data visualization, and management capabilities for ETL workflows.
+
+## Tech Stack
+
+### Backend
+- **FastAPI**: Modern, fast web framework for building APIs
+- **Python 3.8+**: Core programming language
+- **MySQL**: Database for user authentication and metadata
+- **Delta Lake**: Data storage and processing
+- **Pandas & PyArrow**: Data manipulation and processing
+- **JWT**: Authentication and authorization
+- **Uvicorn**: ASGI server for running FastAPI
+
+### Frontend
+- **React**: Frontend library
+- **Vite**: Build tool and development server
+- **Tailwind CSS**: Utility-first CSS framework
+- **DaisyUI**: Component library for Tailwind CSS
+- **React Router**: Navigation and routing
+- **Axios**: HTTP client for API requests
+- **Playwright**: End-to-end testing
+
+## Project Setup
+
+### Backend Setup
+
+1. Navigate to the backend directory:
+   ```bash
+   cd backend
+   ```
+
+2. Create and activate a virtual environment:
+   ```bash
+   python -m venv venv
+   # On Windows
+   .\venv\Scripts\activate
+   # On Unix/MacOS
+   source venv/bin/activate
+   ```
+
+3. Install Python dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. Configure the database connection:
+   - Create a `.env` file in the backend directory
+   - Add the following configuration:
+     ```
+     MYSQL_HOST=localhost
+     MYSQL_USER=your_username
+     MYSQL_PASSWORD=your_password
+     MYSQL_DATABASE=etl_monitoring
+     SECRET_KEY=your_secret_key
+     ```
+
+5. Initialize the database:
+   - Run the SQL script at `backend/config/setup_database.sql`
+   - This creates necessary tables and initial setup
+
+6. Start the backend server:
+   ```bash
+   uvicorn main:app --reload
+   ```
+   The API will be available at `http://localhost:8000`
+
+### Frontend Setup
+
+1. Navigate to the frontend directory:
+   ```bash
+   cd frontend
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+3. Configure API connection:
+   - Create a `.env` file in the frontend directory
+   - Add the following configuration:
+     ```
+     VITE_API_URL=http://localhost:8000
+     ```
+
+4. Start the development server:
+   ```bash
+   npm run dev
+   ```
+   The application will be available at `http://localhost:5173`
+
+## Database Setup
+
+### Importing Data
+
+1. Prepare your data files in the required format
+2. Place the data files in the `backend/data` directory
+3. Run the data import script:
+   ```bash
+   python backend/scripts/import_data.py
+   ```
+
+### Database Connection
+
+The backend uses MySQL for authentication and metadata storage. Configure the connection in the `.env` file:
+
+```
+MYSQL_HOST=localhost
+MYSQL_USER=your_username
+MYSQL_PASSWORD=your_password
+MYSQL_DATABASE=etl_monitoring
+```
+
+## Application Screens
+
+1. **Login Screen**
+   - User authentication
+   - Secure access to the application
+
+   ![Login Screen](docs/assets/login_page.png)
+
+2. **Register Screen**
+   - User Registration
+   - Generating secure login credentials
+
+   ![Register Screen](docs/assets/register_page.png)
+
+3. **Data Sync Status**
+   - Detailed view of data synchronization
+   - Status of each sync process
+   - Historical sync data
+
+   ![Data Sync Status](docs/assets/sync_page.png)
+
+4. **User Vitals**
+   - User activity monitoring
+   - Performance metrics
+   - System health indicators
+
+   ![User Vitals](docs/assets/vitals_page.png)
+
+5. **Summary View**
+   - Consolidated reports
+   - Data analytics
+   - Trend visualization
+
+   ![Summary View](docs/assets/summary_page.png)
+
+## API Documentation
+
+Access the API documentation at:
+- Swagger UI: `http://localhost:8000/docs`
+- ReDoc: `http://localhost:8000/redoc`
+
+## Development
+
+### Available Scripts
+
+#### Backend
+- `uvicorn main:app --reload`: Start development server
+- `uvicorn main:app`: Start production server
+- `pytest`: Run backend tests
+
+#### Frontend
+- `npm run dev`: Start development server
+- `npm run build`: Build for production
+- `npm run preview`: Preview production build
+- `npm run lint`: Run ESLint
+- `npx playwright test`: Run end-to-end tests
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Commit your changes
+4. Push to the branch
+5. Create a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.

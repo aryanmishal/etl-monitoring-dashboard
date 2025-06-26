@@ -1,0 +1,14 @@
+deltalake>=0.12.0
+pandas>=2.0.0
+pyarrow>=14.0.1
+fastapi>=0.109.0
+uvicorn>=0.27.0
+python-dotenv>=1.0.0
+pydantic>=2.0.0
+mysql-connector-python
+bcrypt
+python-jose
+pytest>=8.0.0
+pytest-asyncio>=0.23.0
+httpx>=0.26.0
+pytest-cov>=4.1.0
