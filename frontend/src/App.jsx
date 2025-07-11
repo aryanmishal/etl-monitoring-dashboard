@@ -5,7 +5,20 @@ import SyncStatus from './pages/SyncStatus';
 import VitalsStatus from './pages/VitalsStatus';
 import Summary from './pages/Summary';
 import Login from './pages/Login';
-import Register from './pages/Register';
+import ForgotPassword from './pages/ForgotPassword';
+import Profile from './pages/Profile';
+import Settings from './pages/Settings';
+
+// Global error handler for authentication issues
+window.addEventListener('unhandledrejection', (event) => {
+  if (event.reason?.response?.status === 401) {
+    // Clear storage and redirect to login
+    localStorage.removeItem('token');
+    localStorage.removeItem('rememberMe');
+    sessionStorage.removeItem('token');
+    window.location.href = '/login';
+  }
+});
 
 function RequireAuth({ children, token }) {
   const location = useLocation();
@@ -41,6 +54,8 @@ function App() {
     localStorage.removeItem('rememberMe');
     sessionStorage.removeItem('token');
     setToken(null);
+    // Force redirect to login page
+    window.location.href = '/login';
   };
 
   return (
@@ -50,16 +65,18 @@ function App() {
           <Navbar setToken={handleLogout} />
           <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <Routes>
-              <Route path="/" element={<SyncStatus />} />
+              <Route path="/" element={<Summary />} />
+              <Route path="/sync-status" element={<SyncStatus />} />
               <Route path="/vitals" element={<VitalsStatus />} />
-              <Route path="/summary" element={<Summary />} />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/settings" element={<Settings />} />
             </Routes>
           </main>
         </div>
       ) : (
         <Routes>
           <Route path="/login" element={<Login setToken={setToken} />} />
-          <Route path="/register" element={<Register />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
       )}

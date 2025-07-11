@@ -119,34 +119,34 @@ MYSQL_DATABASE=etl_monitoring
    - User authentication
    - Secure access to the application
 
-   ![Login Screen](docs/assets/login_page.png)
+   ![Login Screen](extras/login_page.png)
 
 2. **Register Screen**
    - User Registration
    - Generating secure login credentials
 
-   ![Register Screen](docs/assets/register_page.png)
+   ![Register Screen](extras/register_page.png)
 
 3. **Data Sync Status**
    - Detailed view of data synchronization
    - Status of each sync process
    - Historical sync data
 
-   ![Data Sync Status](docs/assets/sync_page.png)
+   ![Data Sync Status](extras/sync_page.png)
 
 4. **User Vitals**
    - User activity monitoring
    - Performance metrics
    - System health indicators
 
-   ![User Vitals](docs/assets/vitals_page.png)
+   ![User Vitals](extras/vitals_page.png)
 
 5. **Summary View**
    - Consolidated reports
    - Data analytics
    - Trend visualization
 
-   ![Summary View](docs/assets/summary_page.png)
+   ![Summary View](extras/summary_page.png)
 
 ## API Documentation
 

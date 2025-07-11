@@ -49,15 +49,12 @@ def main():
     # Get the directory where this script is located
     current_dir = Path(__file__).parent
     
-    # List of scripts to run in order
+    # Only run the new unified ingestion script
     scripts = [
-        "load_bronze.py",
-        "load_silver_vitalsswt.py",
-        "load_silver_vitalsbaseline.py",
-        "load_silver_rrbucket.py"
+        "load_bronze.py"
     ]
     
-    # Run each script
+    # Run the script
     success = True
     for script in scripts:
         script_path = current_dir / script

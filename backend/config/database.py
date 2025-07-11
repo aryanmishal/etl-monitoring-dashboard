@@ -1,4 +1,5 @@
 import os
+import mysql.connector
 from dotenv import load_dotenv
 
 # Load environment variables from .env file
@@ -15,4 +16,8 @@ MYSQL_CONFIG = {
 # JWT configuration
 SECRET_KEY = os.getenv('SECRET_KEY', 'supersecretkey')  # Change this in production
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 60 
+ACCESS_TOKEN_EXPIRE_MINUTES = 60
+
+def get_db_connection():
+    """Get a MySQL database connection"""
+    return mysql.connector.connect(**MYSQL_CONFIG) 

@@ -13,7 +13,7 @@ export default function Login({ setToken }) {
     e.preventDefault();
     setError("");
     try {
-      const res = await api.post("/login", { username, password });
+      const res = await api.post("/auth/login", { username, password });
       const token = res.data.access_token;
       
       if (rememberMe) {
@@ -35,67 +35,76 @@ export default function Login({ setToken }) {
   };
 
   return (
-    <div className="min-h-screen w-full flex justify-center items-center bg-gradient-to-r from-[#f6d365] to-[#fda085]">
-      <div className="login-card">
-        <h1>Welcome Back</h1>
-        
-        <form onSubmit={handleLogin} className="login-form">
-          <div className="form-field">
-            <label htmlFor="email" className="form-label">Email ID</label>
-            <input
-              type="email"
-              id="email"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              className="custom-input"
-              required
-            />
+    <div className="min-h-screen w-full bg-login-bg relative">
+      {/* ETL Monitoring Dashboard Logo and Title - Top Left Corner */}
+      <div className="absolute top-8 left-8">
+        <div className="flex items-center gap-4">
+          <div className="w-16 h-16 bg-gray-700 rounded-lg flex items-center justify-center text-white text-3xl font-bold">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+            </svg>
           </div>
-          
-          <div className="form-field">
-            <label htmlFor="password" className="form-label">Password</label>
-            <input
-              type="password"
-              id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="custom-input"
-              required
-            />
+          <div className="flex flex-col items-start">
+            <span className="text-white text-3xl font-bold tracking-wide leading-none">
+              ETL Monitoring
+            </span>
+            <span className="text-white text-xl font-semibold tracking-wide leading-none opacity-90">
+              Dashboard
+            </span>
           </div>
-          
-          <div className="remember-me mb-4">
-            <input
-              type="checkbox"
-              id="remember"
-              className="h-4 w-4"
-              checked={rememberMe}
-              onChange={(e) => setRememberMe(e.target.checked)}
-            />
-            <label htmlFor="remember" className="text-sm">Remember me</label>
-          </div>
-          
-          {error && (
-            <div className="text-red-500 mb-4 text-xl">{error}</div>
-          )}
-          
-          <button
-            type="submit"
-            className="custom-button"
-          >
-            Login
-          </button>
-          
-          <a href="#" className="forgot-password text-sm">
-            Forgot password?
-          </a>
-        </form>
-        
-        <div className="registration-link">
-          Don't have an account?{" "}
-          <Link to="/register" className="text-[#f6d365] font-semibold no-underline hover:underline">
-            Sign up
-          </Link>
+        </div>
+      </div>
+      
+      {/* Login Card - Centered */}
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="login-card dark-theme-card">
+          <h1 className="dark-card-title">Welcome Back</h1>
+          <form onSubmit={handleLogin} className="login-form">
+            <div className="form-field">
+              <label htmlFor="email" className="form-label dark-label">Email ID</label>
+              <input
+                type="email"
+                id="email"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                className="custom-input dark-input"
+                required
+              />
+            </div>
+            <div className="form-field">
+              <label htmlFor="password" className="form-label dark-label">Password</label>
+              <input
+                type="password"
+                id="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="custom-input dark-input"
+                required
+              />
+            </div>
+            <div className="remember-me mb-4">
+              <input
+                type="checkbox"
+                id="remember"
+                className="h-4 w-4"
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+              />
+              <label htmlFor="remember" className="text-sm dark-label">Remember me</label>
+            </div>
+            {error && (
+              <div className="text-red-500 mb-4 text-xl dark-error">{error}</div>
+            )}
+            <button
+              type="submit"
+              className="custom-button dark-button"
+            >
+              Login
+            </button>
+            <Link to="/forgot-password" className="forgot-password text-sm capitalize dark-link">
+              Forgot password?
+            </Link>
+          </form>
         </div>
       </div>
     </div>

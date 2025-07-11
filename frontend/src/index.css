@@ -16,7 +16,7 @@ body {
   min-height: 100vh;
 }
 
-/* Card styles */
+/* Center login/forgot password card perfectly */
 .login-card {
   background: #ffffff;
   padding: 3rem 4rem;
@@ -30,6 +30,7 @@ body {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  margin: 0; /* Remove any vertical margin */
 }
 
 .login-card h1 {
@@ -68,9 +69,9 @@ body {
 }
 
 .custom-button {
-  height: 40px !important;
-  width: 33.333333%;
-  background: linear-gradient(to right, #4a90e2, #357abd);
+  height: 48px !important;
+  width: 100% !important;
+  background: linear-gradient(to right, #6b7280, #4b5563);
   color: white;
   font-weight: 600;
   border: none;
@@ -158,20 +159,31 @@ body {
   border-collapse: collapse;
   margin-top: 20px;
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  border-radius: 12px;
+  overflow: hidden;
 }
 
 .table-container th {
-  background-color: #4CAF50;
+  background-color: #374151;
   color: white;
   padding: 12px;
-  text-align: left;
+  text-align: center;
   border: 1px solid #ddd;
 }
 
 .table-container td {
   border: 1px solid #ddd;
   padding: 12px;
-  text-align: left;
+  text-align: center;
+}
+
+/* Vitals table specific styles - reduced horizontal padding */
+.vitals-table th {
+  padding: 12px 6px;
+}
+
+.vitals-table td {
+  padding: 12px 6px;
 }
 
 .table-container tr:nth-child(even) {
@@ -196,11 +208,71 @@ body {
 /* Date selector styles */
 .date-selector {
   margin: 20px 0;
-  padding: 10px;
-  background-color: white;
-  border-radius: 5px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  padding: 1.5rem 2rem;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  backdrop-filter: blur(10px);
+  position: relative;
 }
+
+
+
+.date-selector label {
+  color: #374151;
+  font-weight: 600;
+  font-size: 0.95rem;
+  letter-spacing: 0.025em;
+}
+
+.date-selector input,
+.date-selector select {
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+  background-color: white;
+}
+
+.date-selector input:focus,
+.date-selector select:focus {
+  border-color: #374151;
+  box-shadow: 0 0 0 3px rgba(55, 65, 81, 0.1);
+  outline: none;
+}
+
+.date-selector input:hover,
+.date-selector select:hover {
+  border-color: #9ca3af;
+}
+
+/* Ensure date picker dropdown is visible */
+.date-selector .relative {
+  overflow: visible !important;
+}
+
+.date-selector .absolute {
+  overflow: visible !important;
+}
+
+/* Override any overflow hidden on date picker containers */
+.date-selector * {
+  overflow: visible !important;
+}
+
+/* Ensure proper positioning for date picker */
+.date-selector {
+  position: relative !important;
+}
+
+.date-selector .relative {
+  position: relative !important;
+  z-index: 99999 !important;
+}
+
+
 
 /* Card styles */
 .card {
@@ -216,6 +288,16 @@ body {
   display: flex;
   gap: 0.5rem;
   align-items: center;
+  z-index: 1;
+}
+
+/* Ensure pagination doesn't overlap date picker */
+.join {
+  z-index: 1 !important;
+}
+
+.join-item {
+  z-index: 1 !important;
 }
 
 .btn {
@@ -245,12 +327,93 @@ body {
 
 /* Override DaisyUI button active state to match our theme */
 .btn-active {
-  background-color: #4CAF50 !important;
+  background-color: #374151 !important;
   color: white !important;
-  border-color: #4CAF50 !important;
+  border-color: #374151 !important;
 }
 
 .btn-active:hover {
-  background-color: #45a049 !important;
-  border-color: #45a049 !important;
+  background-color: #1f2937 !important;
+  border-color: #1f2937 !important;
+}
+
+/* Profile menu z-index override */
+[style*="z-index: 999999999"] {
+  z-index: 999999999 !important;
+}
+
+/* Dark theme card for login/forgot password */
+.dark-theme-card {
+  background: #fff;
+  border-radius: 1rem;
+  box-shadow: 0 8px 32px rgba(30,41,59,0.25);
+  position: relative;
+  padding-top: 2.5rem;
+}
+/* Remove accent bar */
+.card-accent-bar { display: none !important; }
+
+/* Modern gradient background for login/forgot password pages */
+.bg-login-bg {
+  background: linear-gradient(135deg, #23272f 0%, #2d323c 50%, #3a3f4b 100%) !important;
+}
+.dark-card-title {
+  color: #1a1a1a;
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 2rem;
+  letter-spacing: 0.01em;
+  text-align: center;
+}
+.dark-label {
+  color: #374151 !important;
+  font-weight: 600;
+  font-size: 1.1rem;
+  letter-spacing: 0.01em;
+}
+.dark-input {
+  background: #f8fafc !important;
+  border: 1.5px solid #d1d5db !important;
+  color: #1a1a1a !important;
+  font-size: 1.1rem;
+  border-radius: 0.5rem !important;
+  box-shadow: none !important;
+  transition: border 0.2s, box-shadow 0.2s;
+}
+.dark-input:focus {
+  border-color: #374151 !important;
+  box-shadow: 0 0 0 2px #37415133 !important;
+  background: #fff !important;
+}
+.dark-button {
+  background: linear-gradient(90deg, #374151 0%, #4b5563 100%) !important;
+  color: #fff !important;
+  border-radius: 0.5rem !important;
+  font-weight: 700;
+  font-size: 1.1rem;
+  box-shadow: 0 2px 8px rgba(30,41,59,0.10);
+  transition: background 0.2s, box-shadow 0.2s;
+}
+.dark-button:hover {
+  background: #1a1a1a !important;
+  color: #fff !important;
+  box-shadow: 0 4px 16px rgba(30,41,59,0.18);
+}
+.dark-link {
+  color: #4b5563 !important;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  transition: color 0.2s;
+}
+.dark-link:hover {
+  color: #1a1a1a !important;
+  text-decoration: underline;
+}
+.dark-error {
+  color: #dc2626 !important;
+  font-weight: 600;
+}
+.dark-success {
+  color: #16a34a !important;
+  font-weight: 600;
 }
