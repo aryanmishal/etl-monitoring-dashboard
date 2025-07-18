@@ -4,11 +4,15 @@
 1. [Introduction](#introduction)
 2. [Getting Started](#getting-started)
 3. [User Authentication](#user-authentication)
-4. [Dashboard Overview](#dashboard-overview)
-5. [ETL Process Monitoring](#etl-process-monitoring)
-6. [Data Visualization](#data-visualization)
-7. [User Management](#user-management)
-8. [Troubleshooting](#troubleshooting)
+4. [Application Navigation](#application-navigation)
+5. [Summary Page](#summary-page)
+6. [Sync Status Page](#sync-status-page)
+7. [Vitals Page](#vitals-page)
+8. [Profile & Settings](#profile--settings)
+9. [Admin Panel](#admin-panel)
+10. [Troubleshooting](#troubleshooting)
+11. [Best Practices](#best-practices)
+12. [Support](#support)
 
 ## Introduction
 The ETL Monitoring Application is a web-based tool designed to help you monitor and manage your ETL (Extract, Transform, Load) processes. This guide will help you understand how to use the application effectively.
@@ -18,7 +22,7 @@ The ETL Monitoring Application is a web-based tool designed to help you monitor 
 ### System Requirements
 - Modern web browser (Chrome, Firefox, Safari, or Edge)
 - Internet connection
-- Valid user account
+- Valid user account (provided by an administrator)
 
 ### Accessing the Application
 1. Open your web browser
@@ -27,120 +31,59 @@ The ETL Monitoring Application is a web-based tool designed to help you monitor 
 
 ## User Authentication
 
-### Registration
-1. Click on the "Register" link on the login page
-2. Fill in the required information:
-   - Username
-   - Password
-   - Confirm Password
-3. Click "Register" to create your account
-4. You will be automatically logged in after successful registration
-
 ### Login
 1. Enter your username
 2. Enter your password
 3. Click "Login"
-4. You will be redirected to the dashboard upon successful login
+4. You will be redirected to the Summary page upon successful login
 
 ### Password Reset
 1. Click "Forgot Password" on the login page
 2. Enter your registered email address
 3. Follow the instructions sent to your email
 
-## Dashboard Overview
+*Note: User registration is not available through the app. Accounts are created by an administrator.*
 
-### Navigation
-- **Dashboard**: Main overview of ETL processes
-- **Monitoring**: Detailed process monitoring
-- **Reports**: Data visualization and reports
-- **Settings**: User preferences and account settings
+## Application Navigation
 
-### Key Components
-1. **Status Overview**
-   - Active processes
-   - Failed processes
-   - Pending processes
-   - Success rate
+After logging in, you can use the navigation bar to access the following pages:
+- **Summary**: View analytics and trends for ETL processes
+- **Sync Status**: See the status of ETL sync operations
+- **Vitals**: Monitor user/system health metrics
+- **Profile**: View and update your personal information
+- **Settings**: Change your preferences (e.g., custom analytics options)
+- **Admin**: (If you have admin access) Manage users and system settings
 
-2. **Quick Actions**
-   - Start new process
-   - View recent activities
-   - Access common reports
+## Summary Page
 
-## ETL Process Monitoring
+- View daily, weekly, or monthly analytics for ETL processes
+- Use the date picker to select the period you want to analyze
+- Switch between different views (daily/weekly/monthly) using the view selector
+- If you have custom user settings (e.g., custom user count), set them in Settings and see the analytics update accordingly
 
-### Viewing Processes
-1. Navigate to the "Monitoring" section
-2. View the list of all ETL processes
-3. Use filters to:
-   - Search by process name
-   - Filter by status
-   - Sort by date/time
-   - Filter by type
+## Sync Status Page
 
-### Process Details
-1. Click on any process to view details
-2. Information displayed includes:
-   - Process status
-   - Start/End time
-   - Data volume
-   - Error messages (if any)
-   - Performance metrics
+- View the status of all ETL sync processes (running, completed, failed)
+- See historical sync data
+- Use pagination or filters (if available) to navigate records
 
-### Taking Actions
-1. **Start Process**
-   - Click "Start New Process"
-   - Select process type
-   - Configure parameters
-   - Click "Start"
+## Vitals Page
 
-2. **Stop Process**
-   - Find the running process
-   - Click "Stop"
-   - Confirm the action
+- Monitor key health metrics for users and the system
+- Quickly spot issues or bottlenecks in the ETL pipeline
 
-3. **View Logs**
-   - Click "View Logs" on any process
-   - Filter logs by severity
-   - Download logs if needed
+## Profile & Settings
 
-## Data Visualization
+- **Profile**: Update your personal information (nickname, full name, etc.)
+- **Settings**: Change your preferences, such as notification settings or custom analytics options
+- Change your password from the Profile or Settings page
 
-### Available Reports
-1. **Process Performance**
-   - Success rate trends
-   - Processing time analysis
-   - Error distribution
+## Admin Panel
 
-2. **Data Volume**
-   - Daily/weekly/monthly volumes
-   - Growth trends
-   - Source distribution
-
-3. **Custom Reports**
-   - Create custom visualizations
-   - Save report templates
-   - Schedule automated reports
-
-### Using Reports
-1. Select report type
-2. Choose time period
-3. Apply filters
-4. Export data if needed
-
-## User Management
-
-### Profile Settings
-1. Access "Settings" from the navigation menu
-2. Update personal information
-3. Change password
-4. Set notification preferences
-
-### Notification Preferences
-1. Email notifications
-2. In-app alerts
-3. Process status updates
-4. Error notifications
+*For users with admin access only:*
+- Manage user accounts (add, edit, or remove users)
+- View system settings and perform administrative actions
+- Access the Admin Login page to authenticate as an admin if required
 
 ## Troubleshooting
 
@@ -152,11 +95,10 @@ The ETL Monitoring Application is a web-based tool designed to help you monitor 
    - Clear browser cache
    - Try incognito mode
 
-2. **Process Failures**
+2. **Process/Data Issues**
    - Check error messages
    - Verify data source availability
-   - Check system resources
-   - Review process logs
+   - Contact your administrator if issues persist
 
 3. **Performance Issues**
    - Clear browser cache
@@ -173,21 +115,18 @@ The ETL Monitoring Application is a web-based tool designed to help you monitor 
 ## Best Practices
 
 1. **Regular Monitoring**
-   - Check dashboard daily
-   - Review error logs
-   - Monitor system performance
+   - Check the Summary and Sync Status pages regularly
+   - Review error logs and system health metrics
 
 2. **Data Management**
-   - Regular backup of important data
-   - Archive old processes
-   - Clean up unnecessary logs
+   - Ensure important data is backed up (admin responsibility)
+   - Archive old processes as needed
 
 3. **Security**
    - Use strong passwords
    - Log out after sessions
    - Report suspicious activities
    - Keep credentials secure
-
 
 ## Support
 

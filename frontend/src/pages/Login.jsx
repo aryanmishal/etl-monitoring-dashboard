@@ -13,7 +13,7 @@ export default function Login({ setToken }) {
     e.preventDefault();
     setError("");
     try {
-      const res = await api.post("/auth/login", { username, password });
+      const res = await api.post("/api/auth/login", { username, password });
       const token = res.data.access_token;
       
       if (rememberMe) {
@@ -106,6 +106,15 @@ export default function Login({ setToken }) {
             </Link>
           </form>
         </div>
+      </div>
+      <div className="absolute bottom-4 right-4">
+        <button
+          style={{ backgroundColor: '#374151' }}
+          className="text-white px-6 py-3 rounded-xl shadow-lg font-semibold transition-all duration-200 hover:bg-[#4B5563] hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#374151]"
+          onClick={() => window.location.href = '/admin-login'}
+        >
+          Admin Login
+        </button>
       </div>
     </div>
   );

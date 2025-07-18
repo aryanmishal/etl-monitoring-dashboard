@@ -8,6 +8,8 @@ import Login from './pages/Login';
 import ForgotPassword from './pages/ForgotPassword';
 import Profile from './pages/Profile';
 import Settings from './pages/Settings';
+import Admin from './pages/Admin';
+import AdminLogin from './pages/AdminLogin';
 
 // Global error handler for authentication issues
 window.addEventListener('unhandledrejection', (event) => {
@@ -70,6 +72,7 @@ function App() {
               <Route path="/vitals" element={<VitalsStatus />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/settings" element={<Settings />} />
+              <Route path="/admin" element={<Admin />} />
             </Routes>
           </main>
         </div>
@@ -77,6 +80,8 @@ function App() {
         <Routes>
           <Route path="/login" element={<Login setToken={setToken} />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/admin-login" element={<AdminLogin />} />
+          <Route path="/admin" element={<Admin />} />
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
       )}

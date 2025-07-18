@@ -37,7 +37,7 @@ export default function ForgotPassword() {
   // Check backend for email existence
   const checkEmailExists = async (email) => {
     try {
-      const res = await api.post('/check-user', { username: email, password: 'dummy' });
+      const res = await api.post('/api/auth/check-user', { username: email, password: 'dummy' });
       return res.data.exists;
     } catch (err) {
       return false;
@@ -83,7 +83,7 @@ export default function ForgotPassword() {
       return;
     }
     try {
-      await api.post('/reset-password', { username: email, new_password: newPassword });
+      await api.post('/api/auth/reset-password', { username: email, new_password: newPassword });
       setSuccess('Password reset successful! You can now log in with your new password.');
       setStep(4);
     } catch (err) {

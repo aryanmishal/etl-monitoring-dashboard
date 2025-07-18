@@ -45,7 +45,8 @@ def get_aggregated_summary(date_list, period_type):
     for date_str in date_list:
         for fname in os.listdir(data_dir):
             if fname.endswith('.gz'):
-                user_id, ingestion_date = fname.split('_')[0], fname.split('_')[1].replace('.gz', '')
+                user_id, rest = fname.split('_', 1)
+                ingestion_date = rest.split('_')[0].split('.')[0]
                 try:
                     dt = datetime.utcfromtimestamp(int(ingestion_date) / 1000)
                     date_str_file = dt.strftime('%Y-%m-%d')
@@ -280,7 +281,8 @@ def get_summary(date_str: str) -> dict:
     raw_records_by_user = {}  # Track raw records per user
     for fname in os.listdir(data_dir):
         if fname.endswith('.gz'):
-            user_id, ingestion_date = fname.split('_')[0], fname.split('_')[1].replace('.gz', '')
+            user_id, rest = fname.split('_', 1)
+            ingestion_date = rest.split('_')[0].split('.')[0]
             try:
                 from datetime import datetime
                 dt = datetime.utcfromtimestamp(int(ingestion_date) / 1000)
@@ -295,11 +297,11 @@ def get_summary(date_str: str) -> dict:
                         record_count = len(records)
                         raw_count += record_count
                         raw_users.add(user_id)
-                        raw_records_by_user[user_id] = record_count
+                        raw_records_by_user[user_id] = raw_records_by_user.get(user_id, 0) + record_count
                     else:
                         raw_count += 1
                         raw_users.add(user_id)
-                        raw_records_by_user[user_id] = 1
+                        raw_records_by_user[user_id] = raw_records_by_user.get(user_id, 0) + 1
     # Bronze
     bronze_count = 0
     bronze_users = set()

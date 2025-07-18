@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Query, Depends, HTTPException, Header
+from fastapi import APIRouter, Query, Depends, HTTPException, Header, Body
 from services.delta_reader import (
     get_data_sync_status,
     get_user_vitals_status,
@@ -310,3 +310,83 @@ def test_settings():
     except Exception as e:
         print(f"Error in test_settings: {e}")
         return {"error": str(e)}
+
+# --- ADMIN USER MANAGEMENT ENDPOINTS ---
+@router.get("/admin/users")
+def admin_get_users():
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("SELECT id, username, nickname, full_name, password_hash FROM users")
+    users = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    return {"users": users}
+
+@router.post("/admin/users")
+def admin_add_user(data: dict = Body(...)):
+    username = data.get('username')
+    password = data.get('password')
+    nickname = data.get('nickname')
+    full_name = data.get('full_name')
+    if not username or not password:
+        return {"error": "Username and password are required."}
+    import bcrypt
+    hashed = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("INSERT INTO users (username, nickname, full_name, password_hash) VALUES (%s, %s, %s, %s)",
+                       (username, nickname, full_name, hashed))
+        conn.commit()
+        user_id = cursor.lastrowid
+    except Exception as e:
+        conn.rollback()
+        cursor.close()
+        conn.close()
+        return {"error": str(e)}
+    cursor.close()
+    conn.close()
+    return {"success": True, "user_id": user_id}
+
+@router.put("/admin/users/{user_id}")
+def admin_update_user(user_id: int, data: dict = Body(...)):
+    username = data.get('username')
+    password = data.get('password')
+    nickname = data.get('nickname')
+    full_name = data.get('full_name')
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    try:
+        if password:
+            import bcrypt
+            hashed = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
+            cursor.execute("UPDATE users SET username=%s, nickname=%s, full_name=%s, password_hash=%s WHERE id=%s",
+                           (username, nickname, full_name, hashed, user_id))
+        else:
+            cursor.execute("UPDATE users SET username=%s, nickname=%s, full_name=%s WHERE id=%s",
+                           (username, nickname, full_name, user_id))
+        conn.commit()
+    except Exception as e:
+        conn.rollback()
+        cursor.close()
+        conn.close()
+        return {"error": str(e)}
+    cursor.close()
+    conn.close()
+    return {"success": True}
+
+@router.delete("/admin/users/{user_id}")
+def admin_delete_user(user_id: int):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("DELETE FROM users WHERE id=%s", (user_id,))
+        conn.commit()
+    except Exception as e:
+        conn.rollback()
+        cursor.close()
+        conn.close()
+        return {"error": str(e)}
+    cursor.close()
+    conn.close()
+    return {"success": True}

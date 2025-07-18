@@ -44,7 +44,7 @@ export const getProfile = async () => {
     if (!token) {
         throw new Error('No token available');
     }
-    const response = await api.get('/auth/profile', {
+    const response = await api.get('/api/auth/profile', {
         headers: {
             'Authorization': `Bearer ${token}`
         }

@@ -18,7 +18,7 @@ export default function VitalsStatus() {
   const fetchData = async (selectedDate) => {
     setLoading(true);
     try {
-      const res = await api.get("/user-vitals", { params: { date: selectedDate, page: 1, page_size: 10000 } });
+      const res = await api.get("/api/user-vitals", { params: { date: selectedDate, page: 1, page_size: 10000 } });
       setData(res.data.data);
       setColumns(res.data.columns || []);
       setTotalPages(1); // Not used anymore

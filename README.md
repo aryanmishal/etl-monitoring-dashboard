@@ -20,7 +20,6 @@ This project consists of a React frontend and FastAPI backend for monitoring ETL
 - **DaisyUI**: Component library for Tailwind CSS
 - **React Router**: Navigation and routing
 - **Axios**: HTTP client for API requests
-- **Playwright**: End-to-end testing
 
 ## Project Setup
 
@@ -57,8 +56,8 @@ This project consists of a React frontend and FastAPI backend for monitoring ETL
      ```
 
 5. Initialize the database:
-   - Run the SQL script at `backend/config/setup_database.sql`
-   - This creates necessary tables and initial setup
+   - Run the SQL script at `backend/config/setup_database.sql` to create necessary tables and initial setup.
+   - If you need to add new fields to the users table (e.g., `nickname`, `full_name`), use the provided migration script if available.
 
 6. Start the backend server:
    ```bash
@@ -91,62 +90,43 @@ This project consists of a React frontend and FastAPI backend for monitoring ETL
    ```
    The application will be available at `http://localhost:5173`
 
-## Database Setup
+## Database & Data Ingestion
 
-### Importing Data
+- Place your ETL data files (in the required format) in the `backend/data` directory.
+- Use the scripts in `backend/data_ingestion/` (e.g., `load_bronze.py`, `run_all_ingestion.py`) to process and load data into Delta Lake tables.
+- The backend will read from these tables to provide analytics and monitoring features.
 
-1. Prepare your data files in the required format
-2. Place the data files in the `backend/data` directory
-3. Run the data import script:
-   ```bash
-   python backend/scripts/import_data.py
-   ```
+## Application Features
 
-### Database Connection
+- **User Authentication**: Secure login and password reset.
+  
+  ![Login Page](extras/images/login_page.png) <!-- Image placeholder for Login Page -->
 
-The backend uses MySQL for authentication and metadata storage. Configure the connection in the `.env` file:
+- **Summary/Analytics**: Daily, weekly, and monthly analytics with customizable user settings.
+  
+  ![Summary Page](extras/images/summary_page.png) <!-- Image placeholder for Summary Page -->
 
-```
-MYSQL_HOST=localhost
-MYSQL_USER=your_username
-MYSQL_PASSWORD=your_password
-MYSQL_DATABASE=etl_monitoring
-```
+- **Sync Status**: Detailed view of ETL sync processes and their statuses.
+  
+  ![Sync Status Page](extras/images/sync_page.png) <!-- Image placeholder for Sync Status Page -->
 
-## Application Screens
+- **User Vitals**: Monitoring of user/system health metrics.
+  
+  ![User Vitals Page](extras/images/vitals_page.png) <!-- Image placeholder for User Vitals Page -->
 
-1. **Login Screen**
-   - User authentication
-   - Secure access to the application
+- **Profile & Settings**: Update personal info and preferences.
+  
+  ![Profile Page](extras/images/profile_page.png) <!-- Image placeholder for Profile Page -->
+  
+  ![Settings Page](extras/images/settings_page.png) <!-- Image placeholder for Settings Page -->
 
-   ![Login Screen](extras/login_page.png)
+- **Admin Panel**: (If enabled) Manage users and system settings.
+  
+  ![Admin Login Page](extras/images/admin_login_page.png) <!-- Image placeholder for Admin Login Page -->
+  
+  ![Admin Panel Page](extras/images/admin_page.png) <!-- Image placeholder for Admin Panel Page -->
 
-2. **Register Screen**
-   - User Registration
-   - Generating secure login credentials
-
-   ![Register Screen](extras/register_page.png)
-
-3. **Data Sync Status**
-   - Detailed view of data synchronization
-   - Status of each sync process
-   - Historical sync data
-
-   ![Data Sync Status](extras/sync_page.png)
-
-4. **User Vitals**
-   - User activity monitoring
-   - Performance metrics
-   - System health indicators
-
-   ![User Vitals](extras/vitals_page.png)
-
-5. **Summary View**
-   - Consolidated reports
-   - Data analytics
-   - Trend visualization
-
-   ![Summary View](extras/summary_page.png)
+For a detailed walkthrough of all features and usage, see the [USER_GUIDE.md](./USER_GUIDE.md).
 
 ## API Documentation
 
@@ -161,14 +141,12 @@ Access the API documentation at:
 #### Backend
 - `uvicorn main:app --reload`: Start development server
 - `uvicorn main:app`: Start production server
-- `pytest`: Run backend tests
 
 #### Frontend
 - `npm run dev`: Start development server
 - `npm run build`: Build for production
 - `npm run preview`: Preview production build
 - `npm run lint`: Run ESLint
-- `npx playwright test`: Run end-to-end tests
 
 ## Contributing
 

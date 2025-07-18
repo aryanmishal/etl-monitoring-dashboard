@@ -17,12 +17,12 @@ export default function Settings() {
   const loadUserSettings = async () => {
     try {
       setLoading(true);
-      const response = await api.get('/user-settings');
+      const response = await api.get('/api/user-settings');
       const settings = response.data;
       
       // Set the loaded settings with defaults if not present
       setUserCountLogic(settings.user_count_logic || 'raw_files');
-      setCustomUserCount(settings.custom_user_count || '');
+      setCustomUserCount(settings.custom_user_count !== undefined && settings.custom_user_count !== null ? String(settings.custom_user_count) : '');
       setTheme(settings.theme || 'light');
     } catch (error) {
       console.error('Error loading settings:', error);
@@ -64,7 +64,7 @@ export default function Settings() {
         theme: theme
       };
       
-      await api.post('/user-settings', settings);
+      await api.post('/api/user-settings', settings);
       setMessage('Settings saved successfully!');
       
       // Clear success message after 3 seconds
@@ -93,7 +93,7 @@ export default function Settings() {
         theme: 'light'
       };
       
-      await api.post('/user-settings', defaultSettings);
+      await api.post('/api/user-settings', defaultSettings);
       setMessage('Settings reset to defaults successfully!');
       
       // Clear success message after 3 seconds
@@ -217,10 +217,9 @@ export default function Settings() {
             <select
               value={theme}
               onChange={e => setTheme(e.target.value)}
-              className="w-full border border-gray-300 rounded-md px-4 py-2 pr-8 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+              className="w-full border border-gray-300 rounded-md px-4 py-2 pr-8 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-gray-500"
             >
               <option value="light">Light Mode (Default)</option>
-              <option value="dark">Dark Mode</option>
             </select>
           </div>
         </div>

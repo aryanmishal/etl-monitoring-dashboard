@@ -73,7 +73,7 @@ export default function Profile() {
     setSuccess(null);
     setError(null);
     try {
-      const res = await api.put('/auth/profile', {
+      const res = await api.put('/api/auth/profile', {
         nickname: form.nickname,
         full_name: form.full_name
       });
@@ -92,7 +92,7 @@ export default function Profile() {
     setPasswordError(null);
     setPasswordSuccess(null);
     try {
-      await api.put('/auth/profile/password', { password });
+      await api.put('/api/auth/profile/password', { password });
       setPassword('');
       setShowPassword(false);
       setPasswordSuccess('Password updated successfully!');
@@ -262,9 +262,6 @@ export default function Profile() {
             </div>
 
             {/* Password Change */}
-            {passwordSuccess && (
-              <div className="text-green-600 font-medium">{passwordSuccess}</div>
-            )}
             <div className="flex items-center p-4 bg-gray-50 rounded-lg">
               <div className="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center mr-4">
                 <svg className="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -275,12 +272,15 @@ export default function Profile() {
                 <label className="text-sm font-medium text-gray-500 uppercase tracking-wide">Password</label>
                 <p className="text-lg font-semibold text-gray-900">••••••••</p>
                 {!showPassword ? (
-                  <button
-                    className="text-blue-600 hover:underline font-medium"
-                    onClick={() => { setShowPassword(true); setPasswordError(null); setPasswordSuccess(null); }}
-                  >
-                    Change Password
-                  </button>
+                  <div>
+                    <button
+                      className="text-blue-600 hover:underline font-medium"
+                      onClick={() => { setShowPassword(true); setPasswordError(null); setPasswordSuccess(null); }}
+                    >
+                      Change Password
+                    </button>
+                    {passwordSuccess && <div className="text-green-600 font-medium mt-2">{passwordSuccess}</div>}
+                  </div>
                 ) : (
                   <div className="flex flex-col gap-2 mt-2">
                     <input

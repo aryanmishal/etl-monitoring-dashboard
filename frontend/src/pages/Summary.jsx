@@ -39,7 +39,7 @@ export default function Summary() {
 
   const loadUserSettings = async () => {
     try {
-      const response = await api.get('/user-settings');
+      const response = await api.get('/api/user-settings');
       setUserSettings(response.data);
       setSettingsLoaded(true);
     } catch (error) {
@@ -52,11 +52,11 @@ export default function Summary() {
   const fetchSummary = async (selectedDate) => {
     setLoading(true);
     try {
-      let endpoint = "/summary";
+      let endpoint = "/api/summary";
       if (viewType === "weekly") {
-        endpoint = "/summary/weekly";
+        endpoint = "/api/summary/weekly";
       } else if (viewType === "monthly") {
-        endpoint = "/summary/monthly";
+        endpoint = "/api/summary/monthly";
       }
       
       // No pagination: do not send page or page_size
@@ -240,10 +240,11 @@ export default function Summary() {
           </div>
           
           <div className="p-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {/* Key Metrics Section */}
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                  Key Metrics
                 </h3>
                 
                 <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
@@ -266,9 +267,10 @@ export default function Summary() {
                 </div>
               </div>
 
-              {/* Status Section */}
+              {/* Ingestion Status Section */}
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                  Ingestion Status
                 </h3>
                 
                 <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
@@ -276,6 +278,24 @@ export default function Summary() {
                     <span className="text-gray-600 font-medium">Total Users</span>
                     <span className="text-2xl font-bold text-gray-800">{summary.total_users}</span>
                   </div>
+                  <div className="flex justify-between items-center mb-3">
+                    <span className="text-gray-600 font-medium">Successful Ingestions</span>
+                    <span className="text-2xl font-bold text-green-600">{summary.successful_ingestions || 0}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-600 font-medium">Missing Ingestions</span>
+                    <span className="text-2xl font-bold text-red-600">{summary.total_users - (summary.successful_ingestions || 0)}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Pipeline Status Section */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                  Pipeline Status
+                </h3>
+                
+                <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
                   <div className="flex justify-between items-center mb-3">
                     <span className="text-gray-600 font-medium">Raw to Bronze</span>
                     <span className={`px-3 py-1 rounded-full text-sm font-semibold ${

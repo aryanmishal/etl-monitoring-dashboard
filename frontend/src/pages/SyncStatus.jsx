@@ -20,7 +20,7 @@ export default function SyncStatus() {
         setLoading(true);
         setError(null);
         try {
-            const res = await api.get("/sync-status", { params: { date: selectedDate, page: 1, page_size: 10000 } });
+            const res = await api.get("/api/sync-status", { params: { date: selectedDate, page: 1, page_size: 10000 } });
             if (res.data && Array.isArray(res.data.data)) {
                 setData(res.data.data);
                 setColumns(res.data.columns || []);
