@@ -131,7 +131,7 @@ After logging in, you can use the navigation bar to access the following pages:
 ## Support
 
 For additional support:
-1. Check out Video Guide (https://www.loom.com/share/6af0dad272ca481fbedfd3879623d849)
+1. Check out Video Guide (https://www.loom.com/share/7ac894fe57304a76a1af7babf325cd3a?sid=c6761730-3e52-4857-bcbc-d3e5d9e683e5)
 2. Contact system administrator
 3. Submit support ticket
 4. Email: aryanmishal@outlook.com
