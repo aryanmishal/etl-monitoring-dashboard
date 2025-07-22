@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { getProfile } from '../api';
 import api from '../api';
 
@@ -15,6 +15,19 @@ export default function Profile() {
   const [passwordSaving, setPasswordSaving] = useState(false);
   const [passwordError, setPasswordError] = useState(null);
   const [passwordSuccess, setPasswordSuccess] = useState(null);
+
+  const errorTimeoutRef = useRef(null);
+
+  // Auto-hide error after 5 seconds
+  useEffect(() => {
+    if (error) {
+      if (errorTimeoutRef.current) clearTimeout(errorTimeoutRef.current);
+      errorTimeoutRef.current = setTimeout(() => setError(null), 5000);
+    }
+    return () => {
+      if (errorTimeoutRef.current) clearTimeout(errorTimeoutRef.current);
+    };
+  }, [error]);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -150,6 +163,19 @@ export default function Profile() {
 
   return (
     <div className="max-w-4xl mx-auto px-4">
+      {/* Error notification at top right */}
+      {error && (
+        <div
+          className="fixed top-6 right-6 z-50 bg-red-100 border border-red-400 text-red-800 px-6 py-3 rounded-lg shadow-lg text-lg flex items-center gap-2 animate-fade-in"
+          style={{ minWidth: 240 }}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mr-2 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 5.636l-1.414-1.414A9 9 0 105.636 18.364l1.414 1.414A9 9 0 1018.364 5.636z" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01" />
+          </svg>
+          {error}
+        </div>
+      )}
       {/* Header */}
       <div className="mt-4 mb-4">
         <h1 className="text-2xl font-semibold text-gray-900">User Profile</h1>
@@ -193,7 +219,6 @@ export default function Profile() {
         
         <div className="p-3">
           {success && <div className="mb-3 text-green-600 font-medium">{success}</div>}
-          {error && <div className="mb-3 text-red-600 font-medium">{error}</div>}
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {/* Nickname */}

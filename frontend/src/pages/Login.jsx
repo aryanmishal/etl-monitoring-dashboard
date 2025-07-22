@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import api from "../api";
 
@@ -8,34 +8,83 @@ export default function Login({ setToken }) {
   const [error, setError] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const navigate = useNavigate();
+  const errorTimeoutRef = useRef(null);
+
+  // On mount, load error from sessionStorage if present
+  useEffect(() => {
+    const storedError = sessionStorage.getItem("login_error");
+    if (storedError) setError(storedError);
+  }, []);
+
+  // Auto-clear error after 5 seconds
+  useEffect(() => {
+    if (error) {
+      if (errorTimeoutRef.current) clearTimeout(errorTimeoutRef.current);
+      errorTimeoutRef.current = setTimeout(() => {
+        setError("");
+        sessionStorage.removeItem("login_error");
+      }, 5000);
+    }
+    return () => {
+      if (errorTimeoutRef.current) clearTimeout(errorTimeoutRef.current);
+    };
+  }, [error]);
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setError("");
     try {
       const res = await api.post("/api/auth/login", { username, password });
       const token = res.data.access_token;
-      
       if (rememberMe) {
-        // Store in localStorage for persistent storage
         localStorage.setItem("token", token);
         localStorage.setItem("rememberMe", "true");
       } else {
-        // Store in sessionStorage for temporary storage (cleared when browser closes)
         sessionStorage.setItem("token", token);
         localStorage.removeItem("token");
         localStorage.removeItem("rememberMe");
       }
-      
       setToken(token);
+      sessionStorage.removeItem("login_error");
+      setError("");
       navigate("/");
     } catch (err) {
-      setError(err.response?.data?.detail || "Login failed");
+      const msg = err.response?.data?.detail || "Login failed";
+      setError(msg);
+      sessionStorage.setItem("login_error", msg);
+    }
+  };
+
+  // Clear error on input change
+  const handleUsernameChange = (e) => {
+    setUsername(e.target.value);
+    if (error) {
+      setError("");
+      sessionStorage.removeItem("login_error");
+    }
+  };
+  const handlePasswordChange = (e) => {
+    setPassword(e.target.value);
+    if (error) {
+      setError("");
+      sessionStorage.removeItem("login_error");
     }
   };
 
   return (
     <div className="min-h-screen w-full bg-login-bg relative">
+      {/* Error notification at top right */}
+      {error && (
+        <div
+          className="fixed top-6 right-6 z-50 bg-red-100 border border-red-400 text-red-800 px-6 py-3 rounded-lg shadow-lg text-lg flex items-center gap-2 animate-fade-in"
+          style={{ minWidth: 240 }}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mr-2 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 5.636l-1.414-1.414A9 9 0 105.636 18.364l1.414 1.414A9 9 0 1018.364 5.636z" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01" />
+          </svg>
+          {error}
+        </div>
+      )}
       {/* ETL Monitoring Dashboard Logo and Title - Top Left Corner */}
       <div className="absolute top-8 left-8">
         <div className="flex items-center gap-4">
@@ -49,16 +98,15 @@ export default function Login({ setToken }) {
               ETL Monitoring
             </span>
             <span className="text-white text-xl font-semibold tracking-wide leading-none opacity-90">
-              Dashboard
+              Login Portal
             </span>
           </div>
         </div>
       </div>
-      
       {/* Login Card - Centered */}
       <div className="flex justify-center items-center min-h-screen">
         <div className="login-card dark-theme-card">
-          <h1 className="dark-card-title">Welcome Back</h1>
+          <h1 className="dark-card-title">Login</h1>
           <form onSubmit={handleLogin} className="login-form">
             <div className="form-field">
               <label htmlFor="email" className="form-label dark-label">Email ID</label>
@@ -66,7 +114,7 @@ export default function Login({ setToken }) {
                 type="email"
                 id="email"
                 value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                onChange={handleUsernameChange}
                 className="custom-input dark-input"
                 required
               />
@@ -77,11 +125,12 @@ export default function Login({ setToken }) {
                 type="password"
                 id="password"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={handlePasswordChange}
                 className="custom-input dark-input"
                 required
               />
             </div>
+            {/* Remove error message from inside the login card */}
             <div className="remember-me mb-4">
               <input
                 type="checkbox"
@@ -92,12 +141,10 @@ export default function Login({ setToken }) {
               />
               <label htmlFor="remember" className="text-sm dark-label">Remember me</label>
             </div>
-            {error && (
-              <div className="text-red-500 mb-4 text-xl dark-error">{error}</div>
-            )}
             <button
               type="submit"
               className="custom-button dark-button"
+              data-testid="user-login-btn"
             >
               Login
             </button>

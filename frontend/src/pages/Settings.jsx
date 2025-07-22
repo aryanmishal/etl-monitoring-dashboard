@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import api from '../api';
 
 export default function Settings() {
@@ -8,11 +8,23 @@ export default function Settings() {
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
   const [theme, setTheme] = useState('light');
+  const errorTimeoutRef = useRef(null);
 
   // Load user settings on component mount
   useEffect(() => {
     loadUserSettings();
   }, []);
+
+  // Auto-hide error after 5 seconds
+  useEffect(() => {
+    if (message && (message.toLowerCase().includes('error') || message.toLowerCase().includes('please enter'))) {
+      if (errorTimeoutRef.current) clearTimeout(errorTimeoutRef.current);
+      errorTimeoutRef.current = setTimeout(() => setMessage(''), 5000);
+    }
+    return () => {
+      if (errorTimeoutRef.current) clearTimeout(errorTimeoutRef.current);
+    };
+  }, [message]);
 
   const loadUserSettings = async () => {
     try {
@@ -119,18 +131,22 @@ export default function Settings() {
 
   return (
     <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-md mt-8">
-      <h1 className="text-2xl font-bold mb-4">Settings</h1>
-      <p className="text-gray-600 mb-6">Manage your preferences and account settings below.</p>
-      
-      {message && (
-        <div className={`mb-4 p-3 rounded-md ${
-          message.includes('Error') || message.includes('Please enter')
-            ? 'bg-red-100 text-red-700 border border-red-400' 
-            : 'bg-green-100 text-green-700 border border-green-400'
-        }`}>
+      {/* Error notification at top right */}
+      {message && (message.toLowerCase().includes('error') || message.toLowerCase().includes('please enter')) && (
+        <div
+          className="fixed top-6 right-6 z-50 bg-red-100 border border-red-400 text-red-800 px-6 py-3 rounded-lg shadow-lg text-lg flex items-center gap-2 animate-fade-in"
+          style={{ minWidth: 240 }}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mr-2 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 5.636l-1.414-1.414A9 9 0 105.636 18.364l1.414 1.414A9 9 0 1018.364 5.636z" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01" />
+          </svg>
           {message}
         </div>
       )}
+      <h1 className="text-2xl font-bold mb-4">Settings</h1>
+      <p className="text-gray-600 mb-6">Manage your preferences and account settings below.</p>
+      
       
       <div className="space-y-6">
         {/* User Count Logic Setting */}

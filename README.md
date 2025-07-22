@@ -1,6 +1,6 @@
 # ETL Monitoring Project
 
-This project consists of a React frontend and FastAPI backend for monitoring ETL (Extract, Transform, Load) processes. The application provides real-time monitoring, data visualization, and management capabilities for ETL workflows.
+This project is a full-stack ETL Monitoring Dashboard with a React frontend and FastAPI backend. It provides real-time monitoring, analytics, and management for ETL (Extract, Transform, Load) workflows, including user authentication, customizable analytics, and admin user management.
 
 ## Tech Stack
 
@@ -29,7 +29,6 @@ This project consists of a React frontend and FastAPI backend for monitoring ETL
    ```bash
    cd backend
    ```
-
 2. Create and activate a virtual environment:
    ```bash
    python -m venv venv
@@ -38,12 +37,10 @@ This project consists of a React frontend and FastAPI backend for monitoring ETL
    # On Unix/MacOS
    source venv/bin/activate
    ```
-
 3. Install Python dependencies:
    ```bash
    pip install -r requirements.txt
    ```
-
 4. Configure the database connection:
    - Create a `.env` file in the backend directory
    - Add the following configuration:
@@ -54,11 +51,9 @@ This project consists of a React frontend and FastAPI backend for monitoring ETL
      MYSQL_DATABASE=etl_monitoring
      SECRET_KEY=your_secret_key
      ```
-
 5. Initialize the database:
    - Run the SQL script at `backend/config/setup_database.sql` to create necessary tables and initial setup.
    - If you need to add new fields to the users table (e.g., `nickname`, `full_name`), use the provided migration script if available.
-
 6. Start the backend server:
    ```bash
    uvicorn main:app --reload
@@ -71,19 +66,16 @@ This project consists of a React frontend and FastAPI backend for monitoring ETL
    ```bash
    cd frontend
    ```
-
 2. Install dependencies:
    ```bash
    npm install
    ```
-
 3. Configure API connection:
    - Create a `.env` file in the frontend directory
    - Add the following configuration:
      ```
      VITE_API_URL=http://localhost:8000
      ```
-
 4. Start the development server:
    ```bash
    npm run dev
@@ -98,33 +90,23 @@ This project consists of a React frontend and FastAPI backend for monitoring ETL
 
 ## Application Features
 
-- **User Authentication**: Secure login and password reset.
+- **User Authentication**: Secure login, password reset, and session management with JWT. Automatic logout on session expiration or authentication errors.
+- **Summary/Analytics**: Daily, weekly, and monthly analytics with customizable user settings (e.g., custom user count logic).
+- **Sync Status**: Detailed view of ETL sync processes and their statuses for all users.
+- **User Vitals**: Monitoring of user/system health metrics and ETL pipeline health.
+- **Profile Management**: Update personal info (nickname, full name) and change password from the Profile page.
+- **Settings**: Customize analytics logic (user count logic: raw files or custom input) and theme preferences.
+- **Admin Panel**: Manage user accounts (add, edit, or remove users) and perform administrative actions (admin access required).
+- **Robust Error Handling**: Global error handler for authentication issues and session expiration.
   
-  ![Login Page](extras/images/login_page.png) <!-- Image placeholder for Login Page -->
-
-- **Summary/Analytics**: Daily, weekly, and monthly analytics with customizable user settings.
-  
-  ![Summary Page](extras/images/summary_page.png) <!-- Image placeholder for Summary Page -->
-
-- **Sync Status**: Detailed view of ETL sync processes and their statuses.
-  
-  ![Sync Status Page](extras/images/sync_page.png) <!-- Image placeholder for Sync Status Page -->
-
-- **User Vitals**: Monitoring of user/system health metrics.
-  
-  ![User Vitals Page](extras/images/vitals_page.png) <!-- Image placeholder for User Vitals Page -->
-
-- **Profile & Settings**: Update personal info and preferences.
-  
-  ![Profile Page](extras/images/profile_page.png) <!-- Image placeholder for Profile Page -->
-  
-  ![Settings Page](extras/images/settings_page.png) <!-- Image placeholder for Settings Page -->
-
-- **Admin Panel**: (If enabled) Manage users and system settings.
-  
-  ![Admin Login Page](extras/images/admin_login_page.png) <!-- Image placeholder for Admin Login Page -->
-  
-  ![Admin Panel Page](extras/images/admin_page.png) <!-- Image placeholder for Admin Panel Page -->
+  ![Login Page](docs/assets/login_page.png)
+  ![Summary Page](docs/assets/summary_page.png)
+  ![Sync Status Page](docs/assets/sync_page.png)
+  ![User Vitals Page](docs/assets/vitals_page.png)
+  ![Profile Page](docs/assets/profile_page.png)
+  ![Settings Page](docs/assets/settings_page.png)
+  ![Admin Login Page](docs/assets/admin_login_page.png)
+  ![Admin Panel Page](docs/assets/admin_page.png)
 
 For a detailed walkthrough of all features and usage, see the [USER_GUIDE.md](./USER_GUIDE.md).
 

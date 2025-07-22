@@ -1,10 +1,22 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 export default function AdminLogin() {
   const [code, setCode] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const errorTimeoutRef = useRef(null);
+
+  // Auto-hide error after 5 seconds
+  useEffect(() => {
+    if (error) {
+      if (errorTimeoutRef.current) clearTimeout(errorTimeoutRef.current);
+      errorTimeoutRef.current = setTimeout(() => setError(''), 5000);
+    }
+    return () => {
+      if (errorTimeoutRef.current) clearTimeout(errorTimeoutRef.current);
+    };
+  }, [error]);
 
   const handleAccess = e => {
     e.preventDefault();
@@ -42,6 +54,20 @@ export default function AdminLogin() {
         </div>
       </div>
       
+      {/* Error notification at top right */}
+      {error && (
+        <div
+          className="fixed top-6 right-6 z-50 bg-red-100 border border-red-400 text-red-800 px-6 py-3 rounded-lg shadow-lg text-lg flex items-center gap-2 animate-fade-in"
+          style={{ minWidth: 240 }}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mr-2 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 5.636l-1.414-1.414A9 9 0 105.636 18.364l1.414 1.414A9 9 0 1018.364 5.636z" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01" />
+          </svg>
+          {error}
+        </div>
+      )}
+
       {/* Login Card - Centered */}
       <div className="flex justify-center items-center min-h-screen">
         <div className="login-card dark-theme-card">
@@ -58,9 +84,7 @@ export default function AdminLogin() {
                 required
               />
             </div>
-            {error && (
-              <div className="text-red-500 mb-4 text-xl dark-error">{error}</div>
-            )}
+            {/* Remove error message from inside the login card */}
             <button type="submit" className="custom-button dark-button">
               Enter
             </button>

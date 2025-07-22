@@ -15,7 +15,7 @@
 12. [Support](#support)
 
 ## Introduction
-The ETL Monitoring Application is a web-based tool designed to help you monitor and manage your ETL (Extract, Transform, Load) processes. This guide will help you understand how to use the application effectively.
+The ETL Monitoring Application is a web-based dashboard for monitoring and managing ETL (Extract, Transform, Load) processes. It provides real-time analytics, user and admin management, and customizable settings for a tailored experience.
 
 ## Getting Started
 
@@ -32,7 +32,7 @@ The ETL Monitoring Application is a web-based tool designed to help you monitor 
 ## User Authentication
 
 ### Login
-1. Enter your username
+1. Enter your username (email)
 2. Enter your password
 3. Click "Login"
 4. You will be redirected to the Summary page upon successful login
@@ -40,67 +40,62 @@ The ETL Monitoring Application is a web-based tool designed to help you monitor 
 ### Password Reset
 1. Click "Forgot Password" on the login page
 2. Enter your registered email address
-3. Follow the instructions sent to your email
+3. Follow the instructions to reset your password
 
-*Note: User registration is not available through the app. Accounts are created by an administrator.*
+*Note: User registration is managed by administrators. If you need an account, contact your admin.*
 
 ## Application Navigation
 
-After logging in, you can use the navigation bar to access the following pages:
-- **Summary**: View analytics and trends for ETL processes
-- **Sync Status**: See the status of ETL sync operations
+After logging in, use the navigation bar to access:
+- **Summary**: View analytics and trends for ETL processes (daily, weekly, monthly)
+- **Sync Status**: See the status of ETL sync operations for all users
 - **Vitals**: Monitor user/system health metrics
-- **Profile**: View and update your personal information
-- **Settings**: Change your preferences (e.g., custom analytics options)
+- **Profile**: View and update your personal information (nickname, full name, password)
+- **Settings**: Change your preferences (analytics logic, custom user count, theme)
 - **Admin**: (If you have admin access) Manage users and system settings
 
 ## Summary Page
-
 - View daily, weekly, or monthly analytics for ETL processes
 - Use the date picker to select the period you want to analyze
-- Switch between different views (daily/weekly/monthly) using the view selector
+- Switch between different views (daily/weekly/monthly)
 - If you have custom user settings (e.g., custom user count), set them in Settings and see the analytics update accordingly
 
 ## Sync Status Page
-
-- View the status of all ETL sync processes (running, completed, failed)
-- See historical sync data
-- Use pagination or filters (if available) to navigate records
+- View the status of all ETL sync processes (available, missing)
+- See historical sync data for all users
+- Use pagination or filters to navigate records
 
 ## Vitals Page
-
 - Monitor key health metrics for users and the system
 - Quickly spot issues or bottlenecks in the ETL pipeline
 
 ## Profile & Settings
-
-- **Profile**: Update your personal information (nickname, full name, etc.)
-- **Settings**: Change your preferences, such as notification settings or custom analytics options
-- Change your password from the Profile or Settings page
+- **Profile**: Update your personal information (nickname, full name) and change your password
+- **Settings**: Change your preferences, such as analytics logic (raw files or custom user count) and theme (light/dark)
+- All changes are saved and applied to analytics and dashboard views
 
 ## Admin Panel
-
 *For users with admin access only:*
 - Manage user accounts (add, edit, or remove users)
-- View system settings and perform administrative actions
 - Access the Admin Login page to authenticate as an admin if required
+- View and update system settings
 
 ## Troubleshooting
 
 ### Common Issues
-
 1. **Login Problems**
    - Verify username and password
    - Check internet connection
    - Clear browser cache
    - Try incognito mode
-
-2. **Process/Data Issues**
+2. **Session Expired / Auto-Logout**
+   - The app will automatically log you out if your session expires or if authentication fails (global error handler)
+   - Simply log in again to continue
+3. **Process/Data Issues**
    - Check error messages
    - Verify data source availability
    - Contact your administrator if issues persist
-
-3. **Performance Issues**
+4. **Performance Issues**
    - Clear browser cache
    - Check internet speed
    - Reduce data load
@@ -113,15 +108,12 @@ After logging in, you can use the navigation bar to access the following pages:
 4. Submit support ticket
 
 ## Best Practices
-
 1. **Regular Monitoring**
    - Check the Summary and Sync Status pages regularly
    - Review error logs and system health metrics
-
 2. **Data Management**
    - Ensure important data is backed up (admin responsibility)
    - Archive old processes as needed
-
 3. **Security**
    - Use strong passwords
    - Log out after sessions
@@ -129,7 +121,6 @@ After logging in, you can use the navigation bar to access the following pages:
    - Keep credentials secure
 
 ## Support
-
 For additional support:
 1. Check out Video Guide (https://www.loom.com/share/7ac894fe57304a76a1af7babf325cd3a?sid=c6761730-3e52-4857-bcbc-d3e5d9e683e5)
 2. Contact system administrator

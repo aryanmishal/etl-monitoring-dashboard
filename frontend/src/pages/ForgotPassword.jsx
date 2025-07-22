@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../api';
 
@@ -13,6 +13,7 @@ export default function ForgotPassword() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [redirectTimeout, setRedirectTimeout] = useState(null);
+  const errorTimeoutRef = useRef(null);
 
   useEffect(() => {
     if (step === 4) {
@@ -33,6 +34,17 @@ export default function ForgotPassword() {
       return () => clearTimeout(timer);
     }
   }, [success]);
+
+  // Auto-hide error after 5 seconds
+  useEffect(() => {
+    if (error) {
+      if (errorTimeoutRef.current) clearTimeout(errorTimeoutRef.current);
+      errorTimeoutRef.current = setTimeout(() => setError(''), 5000);
+    }
+    return () => {
+      if (errorTimeoutRef.current) clearTimeout(errorTimeoutRef.current);
+    };
+  }, [error]);
 
   // Check backend for email existence
   const checkEmailExists = async (email) => {
@@ -97,6 +109,19 @@ export default function ForgotPassword() {
 
   return (
     <div className="min-h-screen w-full flex justify-center items-center bg-login-bg">
+      {/* Error notification at top right */}
+      {error && (
+        <div
+          className="fixed top-6 right-6 z-50 bg-red-100 border border-red-400 text-red-800 px-6 py-3 rounded-lg shadow-lg text-lg flex items-center gap-2 animate-fade-in"
+          style={{ minWidth: 240 }}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mr-2 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 5.636l-1.414-1.414A9 9 0 105.636 18.364l1.414 1.414A9 9 0 1018.364 5.636z" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01" />
+          </svg>
+          {error}
+        </div>
+      )}
       <div className="login-card dark-theme-card">
         <h1 className="dark-card-title">Forgot Password</h1>
         {step === 1 && (
@@ -112,7 +137,6 @@ export default function ForgotPassword() {
                 required
               />
             </div>
-            {error && <div className="text-red-500 mb-4 text-xl dark-error">{error}</div>}
             <button type="submit" className="custom-button dark-button w-full h-12 capitalize">Next</button>
           </form>
         )}
@@ -130,7 +154,6 @@ export default function ForgotPassword() {
               />
               <div className="text-xs mt-2 dark-label">(Use code: <span className="font-bold">{STATIC_CODE}</span>)</div>
             </div>
-            {error && <div className="text-red-500 mb-4 text-xl dark-error">{error}</div>}
             <button type="submit" className="custom-button dark-button w-full h-12 capitalize">Verify</button>
           </form>
         )}
@@ -158,7 +181,6 @@ export default function ForgotPassword() {
                 required
               />
             </div>
-            {error && <div className="text-red-500 mb-4 text-xl dark-error">{error}</div>}
             <button type="submit" className="custom-button dark-button w-full h-12 capitalize">Reset Password</button>
           </form>
         )}
