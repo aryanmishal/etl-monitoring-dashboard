@@ -91,22 +91,28 @@ This project is a full-stack ETL Monitoring Dashboard with a React frontend and 
 ## Application Features
 
 - **User Authentication**: Secure login, password reset, and session management with JWT. Automatic logout on session expiration or authentication errors.
-- **Summary/Analytics**: Daily, weekly, and monthly analytics with customizable user settings (e.g., custom user count logic).
-- **Sync Status**: Detailed view of ETL sync processes and their statuses for all users.
-- **User Vitals**: Monitoring of user/system health metrics and ETL pipeline health.
-- **Profile Management**: Update personal info (nickname, full name) and change password from the Profile page.
-- **Settings**: Customize analytics logic (user count logic: raw files or custom input) and theme preferences.
-- **Admin Panel**: Manage user accounts (add, edit, or remove users) and perform administrative actions (admin access required).
-- **Robust Error Handling**: Global error handler for authentication issues and session expiration.
   
   ![Login Page](docs/assets/login_page.png)
+- **Summary/Analytics**: Daily, weekly, and monthly analytics with customizable user settings (e.g., custom user count logic).
+  
   ![Summary Page](docs/assets/summary_page.png)
+- **Sync Status**: Detailed view of ETL sync processes and their statuses for all users.
+  
   ![Sync Status Page](docs/assets/sync_page.png)
+- **User Vitals**: Monitoring of user/system health metrics and ETL pipeline health.
+  
   ![User Vitals Page](docs/assets/vitals_page.png)
+- **Profile Management**: Update personal info (nickname, full name) and change password from the Profile page.
+  
   ![Profile Page](docs/assets/profile_page.png)
+- **Settings**: Customize analytics logic (user count logic: raw files or custom input) and theme preferences.
+  
   ![Settings Page](docs/assets/settings_page.png)
+- **Admin Panel**: Manage user accounts (add, edit, or remove users) and perform administrative actions (admin access required).
+  
   ![Admin Login Page](docs/assets/admin_login_page.png)
   ![Admin Panel Page](docs/assets/admin_page.png)
+- **Robust Error Handling**: Global error handler for authentication issues and session expiration.
 
 For a detailed walkthrough of all features and usage, see the [USER_GUIDE.md](./USER_GUIDE.md).
 
@@ -140,4 +146,4 @@ Access the API documentation at:
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details
+This project is licensed under the MIT License - see the LICENSE file for details.
