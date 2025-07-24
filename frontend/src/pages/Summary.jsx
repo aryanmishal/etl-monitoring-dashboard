@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import api from "../api";
 import CustomDatePicker from "../components/CustomDatePicker";
-import { getTodayDate, formatDateForDisplay } from "../utils/dateUtils";
+import { getTodayDate, formatDateForDisplay, addDays, addWeeks, addMonths } from "../utils/dateUtils";
 
 // Function to get week dates for a given date (Monday as first day)
 const getWeekDates = (dateStr) => {
@@ -23,6 +23,24 @@ const getWeekDates = (dateStr) => {
   }
   return weekDates;
 };
+
+function formatLongDateWithOrdinal(dateStr) {
+  if (!dateStr) return '';
+  const d = new Date(dateStr + 'T12:00:00');
+  const day = d.getDate();
+  const month = d.toLocaleString('default', { month: 'long' });
+  const year = d.getFullYear();
+  const getOrdinal = (n) => {
+    if (n > 3 && n < 21) return 'th';
+    switch (n % 10) {
+      case 1: return 'st';
+      case 2: return 'nd';
+      case 3: return 'rd';
+      default: return 'th';
+    }
+  };
+  return `${day}${getOrdinal(day)} ${month}, ${year}`;
+}
 
 export default function Summary() {
   const [date, setDate] = useState(() => getTodayDate());
@@ -83,11 +101,13 @@ export default function Summary() {
     setLoading(false);
   };
 
+  // Fetch summary only when date, userSettings, or settingsLoaded changes
   useEffect(() => {
     if (date && settingsLoaded) {
       fetchSummary(date);
     }
-  }, [date, viewType, userSettings, settingsLoaded]);
+    // eslint-disable-next-line
+  }, [date, userSettings, settingsLoaded]);
 
   // Reset date when view type changes
   useEffect(() => {
@@ -100,16 +120,29 @@ export default function Summary() {
       const dayStr = String(firstDayOfMonth.getDate()).padStart(2, '0');
       setDate(`${yearStr}-${monthStr}-${dayStr}`);
     } else if (viewType === "weekly" || viewType === "daily") {
-      // Always set to today for weekly or daily
       setDate(getTodayDate());
     }
+    // eslint-disable-next-line
   }, [viewType]);
 
   const getDateDisplay = () => {
     if (viewType === "daily") {
       return formatDateForDisplay(summary?.date || date);
+    } else if (viewType === "weekly") {
+      if (summary?.date_range) {
+        const [startDate, endDate] = summary.date_range.split(' to ');
+        const formattedStart = formatDateForDisplay(startDate);
+        const formattedEnd = formatDateForDisplay(endDate);
+        return `${formattedStart} to ${formattedEnd}`;
+      } else {
+        // Fallback: calculate week range from selected date
+        const weekDates = getWeekDates(date);
+        const formattedStart = formatDateForDisplay(weekDates[0]);
+        const formattedEnd = formatDateForDisplay(weekDates[6]);
+        return `${formattedStart} to ${formattedEnd}`;
+      }
     } else {
-      // For weekly and monthly, format the date range
+      // Monthly or other view
       if (summary?.date_range) {
         const [startDate, endDate] = summary.date_range.split(' to ');
         const formattedStart = formatDateForDisplay(startDate);
@@ -134,24 +167,80 @@ export default function Summary() {
     }
   };
 
+  const disabledNext = (() => {
+    let nextDate;
+    if (viewType === "daily") nextDate = addDays(date, 1);
+    else if (viewType === "weekly") nextDate = addWeeks(date, 1);
+    else if (viewType === "monthly") nextDate = addMonths(date, 1);
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    const next = new Date(nextDate + 'T12:00:00');
+    next.setHours(0,0,0,0);
+    return next.getTime() > today.getTime();
+  })();
+
   return (
     <div className="max-w-7xl mx-auto px-4">
-      <div className="date-selector flex items-center gap-4 justify-center">
-        <label className="font-semibold mr-1">
-          {viewType === "monthly" ? "Select Month: " : 
-           viewType === "weekly" ? "Select Week: " : "Select Date: "}
-        </label>
-        <CustomDatePicker
-          value={date}
-          onChange={(e) => { setDate(e.target.value); }}
-          label={viewType === "monthly" ? "Select Month" : "Select Date"}
-                          className="border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-gray-600"
-          highlightDates={getHighlightDates()}
-          viewMode={viewType === "monthly" ? "month" : viewType === "weekly" ? "week" : "day"}
-        />
+      <div className="date-selector flex items-center gap-4 justify-center py-4">
+        <label className="font-semibold mr-1 text-base">{viewType === "monthly" ? "Select Month: " : viewType === "weekly" ? "Select Week: " : "Select Date: "}</label>
+        <div className="flex items-center gap-2">
+          <CustomDatePicker
+            value={date}
+            onChange={(e) => { setDate(e.target.value); }}
+            label={viewType === "monthly" ? "Select Month" : "Select Date"}
+            className="h-12 border px-3 py-2 rounded text-base focus:outline-none focus:ring-2 focus:ring-gray-600"
+            highlightDates={getHighlightDates()}
+            viewMode={viewType === "monthly" ? "month" : viewType === "weekly" ? "week" : "day"}
+          />
+          <button
+            type="button"
+            aria-label="Previous"
+            className="border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-gray-500"
+            style={{ height: '40px', width: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'background 0.18s, box-shadow 0.18s' }}
+            onClick={() => {
+              if (viewType === "daily") setDate(addDays(date, -1));
+              else if (viewType === "weekly") setDate(addWeeks(date, -1));
+              else if (viewType === "monthly") setDate(addMonths(date, -1));
+            }}
+            onMouseUp={e => e.currentTarget.blur()}
+            onMouseOver={e => {
+              e.currentTarget.style.background = '#f3f4f6';
+              e.currentTarget.style.boxShadow = '0 2px 8px 0 rgba(55,65,81,0.10)';
+            }}
+            onMouseOut={e => {
+              e.currentTarget.style.background = '';
+              e.currentTarget.style.boxShadow = '';
+            }}
+          >
+            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
+          </button>
+          <button
+            type="button"
+            aria-label="Next"
+            className={`border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-gray-500${disabledNext ? ' opacity-40 cursor-not-allowed' : ''}`}
+            style={{ height: '40px', width: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'background 0.18s, box-shadow 0.18s' }}
+            onClick={() => {
+              if (viewType === "daily") setDate(addDays(date, 1));
+              else if (viewType === "weekly") setDate(addWeeks(date, 1));
+              else if (viewType === "monthly") setDate(addMonths(date, 1));
+            }}
+            disabled={disabledNext}
+            onMouseUp={e => e.currentTarget.blur()}
+            onMouseOver={e => {
+              e.currentTarget.style.background = '#f3f4f6';
+              e.currentTarget.style.boxShadow = '0 2px 8px 0 rgba(55,65,81,0.10)';
+            }}
+            onMouseOut={e => {
+              e.currentTarget.style.background = '';
+              e.currentTarget.style.boxShadow = '';
+            }}
+          >
+            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
+          </button>
+        </div>
         
-        <label className="font-semibold ml-4 mr-0">View Type: </label>
-        <div className="flex gap-1 bg-white border border-gray-200 p-1 rounded-lg shadow-sm">
+        <label className="font-semibold ml-4 mr-0 text-base">View Type: </label>
+        <div className="flex gap-1 bg-white border border-gray-200 p-1 rounded-lg shadow-sm h-12 items-center">
           <label className={`flex items-center gap-2 px-3 py-2 rounded-md cursor-pointer transition-all duration-200 ${
             viewType === "daily" 
               ? "bg-gray-200 text-gray-800 shadow-sm border border-gray-300" 
@@ -235,50 +324,50 @@ export default function Summary() {
               Summary Report
             </h2>
             <p className="text-gray-100 text-sm mt-1">
-              {viewType.charAt(0).toUpperCase() + viewType.slice(1)} View - {getDateDisplay()}
+              {viewType === 'monthly' && date ? (
+                (() => {
+                  const d = new Date(date + 'T12:00:00');
+                  const monthName = d.toLocaleString('default', { month: 'long' });
+                  const year = d.getFullYear();
+                  return `Monthly View - ${monthName}, ${year}`;
+                })()
+              ) : viewType === 'daily' && (summary?.date || date) ? (
+                `Daily View - ${formatLongDateWithOrdinal(summary?.date || date)}`
+              ) : (
+                `${viewType.charAt(0).toUpperCase() + viewType.slice(1)} View - ${getDateDisplay()}`
+              )}
             </p>
           </div>
           
           <div className="p-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {/* Key Metrics Section */}
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-gray-800 mb-4">
-                  Key Metrics
-                </h3>
-                
-                <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                  <div className="flex justify-between items-center mb-3">
+              <div className="flex-1 min-h-[220px] flex flex-col gap-4">
+                <h3 className="text-lg font-semibold text-gray-800 mb-2">Key Metrics</h3>
+                <div className="bg-gray-50 rounded-lg p-4 border border-gray-200 flex-1 flex flex-col gap-4 justify-center">
+                  <div className="flex justify-between items-center">
                     <span className="text-gray-600 font-medium">Total Raw Records</span>
                     <span className="text-2xl font-bold text-gray-800">{summary.total_raw}</span>
                   </div>
-                  <div className="flex justify-between items-center mb-3">
+                  <div className="flex justify-between items-center">
                     <span className="text-gray-600 font-medium">Total Bronze Records</span>
-                    <span className={`text-2xl font-bold ${summary.total_bronze === summary.total_raw ? 'text-green-600' : 'text-red-600'}`}>
-                      {summary.total_bronze}
-                    </span>
+                    <span className={`text-2xl font-bold ${summary.total_bronze === summary.total_raw ? 'text-green-600' : 'text-red-600'}`}>{summary.total_bronze}</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-gray-600 font-medium">Total Silver Records</span>
-                    <span className={`text-2xl font-bold ${summary.total_bronze === summary.total_raw && summary.total_silver === summary.total_bronze * 3 ? 'text-green-600' : 'text-red-600'}`}>
-                      {summary.total_silver}
-                    </span>
+                    <span className={`text-2xl font-bold ${summary.total_bronze === summary.total_raw && summary.total_silver === summary.total_bronze * 3 ? 'text-green-600' : 'text-red-600'}`}>{summary.total_silver}</span>
                   </div>
                 </div>
               </div>
-
               {/* Ingestion Status Section */}
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-gray-800 mb-4">
-                  Ingestion Status
-                </h3>
-                
-                <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                  <div className="flex justify-between items-center mb-3">
+              <div className="flex-1 min-h-[220px] flex flex-col gap-4">
+                <h3 className="text-lg font-semibold text-gray-800 mb-2">Ingestion Status</h3>
+                <div className="bg-gray-50 rounded-lg p-4 border border-gray-200 flex-1 flex flex-col gap-4 justify-center">
+                  <div className="flex justify-between items-center">
                     <span className="text-gray-600 font-medium">Total Users</span>
                     <span className="text-2xl font-bold text-gray-800">{summary.total_users}</span>
                   </div>
-                  <div className="flex justify-between items-center mb-3">
+                  <div className="flex justify-between items-center">
                     <span className="text-gray-600 font-medium">Successful Ingestions</span>
                     <span className="text-2xl font-bold text-green-600">{summary.successful_ingestions || 0}</span>
                   </div>
@@ -288,33 +377,32 @@ export default function Summary() {
                   </div>
                 </div>
               </div>
-
               {/* Pipeline Status Section */}
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-gray-800 mb-4">
-                  Pipeline Status
-                </h3>
-                
-                <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                  <div className="flex justify-between items-center mb-3">
-                    <span className="text-gray-600 font-medium">Raw to Bronze</span>
-                    <span className={`px-3 py-1 rounded-full text-sm font-semibold ${
-                      summary.raw_to_bronze_status === 'Success' 
-                        ? 'bg-green-100 text-green-800' 
-                        : 'bg-red-100 text-red-800'
-                    }`}>
-                      {summary.raw_to_bronze_status}
-                    </span>
+              <div className="flex-1 min-h-[220px] flex flex-col gap-4">
+                <h3 className="text-lg font-semibold text-gray-800 mb-2">Pipeline Status</h3>
+                <div className="bg-gray-50 rounded-lg p-4 border border-gray-200 flex-1 flex flex-col gap-4 justify-center">
+                  <div className="flex justify-between items-center h-8 gap-2">
+                    <span className="text-gray-600 font-medium flex items-center h-8">Raw to Bronze</span>
+                    <span className={`px-3 py-1 rounded-full text-sm font-semibold flex items-center h-8 ${summary.raw_to_bronze_status === 'Success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>{summary.raw_to_bronze_status}</span>
                   </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-600 font-medium">Bronze to Silver</span>
-                    <span className={`px-3 py-1 rounded-full text-sm font-semibold ${
-                      summary.bronze_to_silver_status === 'Success' 
-                        ? 'bg-green-100 text-green-800' 
-                        : 'bg-red-100 text-red-800'
-                    }`}>
-                      {summary.bronze_to_silver_status}
-                    </span>
+                  <div className="flex justify-between items-center h-8 gap-2">
+                    <span className="text-gray-600 font-medium flex items-center h-8">Bronze to Silver</span>
+                    <span className={`px-3 py-1 rounded-full text-sm font-semibold flex items-center h-8 ${summary.bronze_to_silver_status === 'Success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>{summary.bronze_to_silver_status}</span>
+                  </div>
+                  <div className="flex justify-between items-center h-8 gap-2">
+                    <span className="text-gray-600 font-bold flex items-center h-8">Overall Status</span>
+                    {(() => {
+                      // Logic for overall status
+                      const bronzeGreen = summary.total_bronze === summary.total_raw;
+                      const silverGreen = summary.total_bronze === summary.total_raw && summary.total_silver === summary.total_bronze * 3;
+                      const noMissing = (summary.total_users - (summary.successful_ingestions || 0)) === 0;
+                      const rawToBronze = summary.raw_to_bronze_status === 'Success';
+                      const bronzeToSilver = summary.bronze_to_silver_status === 'Success';
+                      const isSuccess = bronzeGreen && silverGreen && noMissing && rawToBronze && bronzeToSilver;
+                      return (
+                        <span className={`px-3 py-1 rounded-full text-sm font-bold flex items-center h-8 ${isSuccess ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>{isSuccess ? 'Success' : 'Failed'}</span>
+                      );
+                    })()}
                   </div>
                 </div>
               </div>

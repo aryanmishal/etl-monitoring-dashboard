@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import api from "../api";
 import CustomDatePicker from "../components/CustomDatePicker";
-import { getTodayDate } from "../utils/dateUtils";
+import CustomDropdown from "../components/CustomDropdown";
+import { getTodayDate, addDays } from "../utils/dateUtils";
 
 export default function VitalsStatus() {
   const [date, setDate] = useState(() => getTodayDate());
@@ -65,33 +66,75 @@ export default function VitalsStatus() {
     setPage(1); // Reset to first page when filter or date changes
   }, [filter, date]);
 
+  const disabledNext = (() => {
+    const nextDate = addDays(date, 1);
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    const next = new Date(nextDate + 'T12:00:00');
+    next.setHours(0,0,0,0);
+    return next.getTime() > today.getTime();
+  })();
+
   return (
-    <div className="max-w-7xl mx-auto px-1">
-      <div className="date-selector flex items-center gap-4 justify-center">
-        <label className="font-semibold mr-1">Select Date: </label>
-        <CustomDatePicker
-          value={date}
-          onChange={(e) => { setDate(e.target.value); setPage(1); }}
-          label="Select Date"
-                          className="border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-gray-600"
-        />
-        <div className="relative">
-          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 01-.659 1.591l-5.432 5.432a2.25 2.25 0 00-.659 1.591v2.927a2.25 2.25 0 01-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 00-.659-1.591L3.659 7.409A2.25 2.25 0 013 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0112 3z" />
-            </svg>
-          </span>
-          <select
-            value={filter}
-            onChange={e => setFilter(e.target.value)}
-                          className="border py-2 rounded focus:outline-none focus:ring-2 focus:ring-gray-600"
-            style={{ height: '48px', lineHeight: '1.5', paddingLeft: '2.25rem', paddingRight: '0.75rem', textAlign: 'left' }}
+    <div className="max-w-7xl mx-auto px-4">
+      <div className="date-selector flex items-center gap-4 justify-center py-4">
+        <label className="font-semibold mr-1 text-base">Select Date: </label>
+        <div className="flex items-center gap-2">
+          <CustomDatePicker
+            value={date}
+            onChange={(e) => { setDate(e.target.value); setPage(1); }}
+            label="Select Date"
+            className="h-12 border px-3 py-2 rounded text-base focus:outline-none focus:ring-2 focus:ring-gray-600"
+          />
+          <button
+            type="button"
+            aria-label="Previous"
+            className="border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-gray-500"
+            style={{ height: '40px', width: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'background 0.18s, box-shadow 0.18s' }}
+            onClick={() => setDate(addDays(date, -1))}
+            onMouseUp={e => e.currentTarget.blur()}
+            onMouseOver={e => {
+              e.currentTarget.style.background = '#f3f4f6';
+              e.currentTarget.style.boxShadow = '0 2px 8px 0 rgba(55,65,81,0.10)';
+            }}
+            onMouseOut={e => {
+              e.currentTarget.style.background = '';
+              e.currentTarget.style.boxShadow = '';
+            }}
           >
-            <option value="all">All Data</option>
-            <option value="available">Available Data</option>
-            <option value="missing">Missing Data</option>
-          </select>
+            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
+          </button>
+          <button
+            type="button"
+            aria-label="Next"
+            className={`border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-gray-500${disabledNext ? ' opacity-40 cursor-not-allowed' : ''}`}
+            style={{ height: '40px', width: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'background 0.18s, box-shadow 0.18s' }}
+            onClick={() => setDate(addDays(date, 1))}
+            disabled={disabledNext}
+            onMouseUp={e => e.currentTarget.blur()}
+            onMouseOver={e => {
+              e.currentTarget.style.background = '#f3f4f6';
+              e.currentTarget.style.boxShadow = '0 2px 8px 0 rgba(55,65,81,0.10)';
+            }}
+            onMouseOut={e => {
+              e.currentTarget.style.background = '';
+              e.currentTarget.style.boxShadow = '';
+            }}
+          >
+            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
+          </button>
         </div>
+        <CustomDropdown
+          value={filter}
+          onChange={val => { setFilter(val); setPage(1); }}
+          options={[
+            { value: 'all', label: 'All Data' },
+            { value: 'available', label: 'Available Data' },
+            { value: 'missing', label: 'Missing Data' },
+          ]}
+          className="h-12 min-w-[120px] max-w-xs"
+          showFilterIcon={true}
+        />
         <div className="relative">
           <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -103,7 +146,7 @@ export default function VitalsStatus() {
             value={search}
             onChange={e => { setSearch(e.target.value); setPage(1); }}
             placeholder="Search by User ID"
-                          className="border pr-8 py-2 rounded focus:outline-none focus:ring-2 focus:ring-gray-600"
+                          className="h-12 border pr-8 py-2 px-3 rounded text-base focus:outline-none focus:ring-2 focus:ring-gray-600"
             style={{ minWidth: '180px', paddingLeft: '2.75rem' }}
           />
           {search && (
@@ -188,6 +231,7 @@ export default function VitalsStatus() {
                                 : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50 hover:border-gray-400 hover:shadow-sm'
                         }`}
                         onClick={() => handlePageChange(page - 1)} 
+                        onMouseUp={e => e.currentTarget.blur()}
                         disabled={page === 1}
                     >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -209,6 +253,7 @@ export default function VitalsStatus() {
                                     <button
                                         key={1}
                                         onClick={() => handlePageChange(1)}
+                                        onMouseUp={e => e.currentTarget.blur()}
                                         className="px-3 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 text-sm font-medium"
                                     >
                                         1
@@ -227,6 +272,7 @@ export default function VitalsStatus() {
                                     <button
                                         key={i}
                                         onClick={() => handlePageChange(i)}
+                                        onMouseUp={e => e.currentTarget.blur()}
                                         className={`px-3 py-2 rounded-lg border text-sm font-medium transition-all duration-200 ${
                                             page === i 
                                                 ? 'bg-gray-700 text-white border-gray-700 shadow-md' 
@@ -249,6 +295,7 @@ export default function VitalsStatus() {
                                     <button
                                         key={filteredTotalPages}
                                         onClick={() => handlePageChange(filteredTotalPages)}
+                                        onMouseUp={e => e.currentTarget.blur()}
                                         className="px-3 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 text-sm font-medium"
                                     >
                                         {filteredTotalPages}
@@ -268,6 +315,7 @@ export default function VitalsStatus() {
                                 : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50 hover:border-gray-400 hover:shadow-sm'
                         }`}
                         onClick={() => handlePageChange(page + 1)} 
+                        onMouseUp={e => e.currentTarget.blur()}
                         disabled={page === filteredTotalPages}
                     >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

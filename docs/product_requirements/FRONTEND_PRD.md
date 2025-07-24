@@ -1,4 +1,5 @@
-# Frontend Product Requirements Document (PRD)
+# Frontend Product Requirements Document (Merged)
+
 ## ETL Monitoring Application - Frontend Component
 
 ---
@@ -295,3 +296,44 @@ This frontend application aligns with the organization's digital transformation 
 ---
 
 *This PRD is a living document and will be updated as requirements evolve and new insights are gained from user feedback and development progress.* 
+
+# AI Build Task List (Tasks & Subtasks)
+
+## 1. Project Setup
+- [ ] Initialize React project with Vite, Tailwind CSS, DaisyUI, and Material-UI
+- [ ] Set up routing with React Router
+- [ ] Configure Axios for API requests
+
+## 2. Authentication
+- [ ] Build Login page (form, error handling, JWT storage)
+- [ ] Build Forgot Password flow (multi-step)
+- [ ] Implement session management and auto-logout on error
+
+## 3. Navbar & Navigation
+- [ ] Implement pill-shaped, grey-only navbar with:
+  - [ ] Summary, Sync Status, Vitals buttons (instant hover/active feedback, no yellow accent)
+  - [ ] Profile menu (top right, opens under navbar, modern styling)
+- [ ] Add yellow accent to admin/user labels only
+
+## 4. Dashboard & Pages
+- [ ] Build Summary page (daily/weekly/monthly views, subtitle logic, date picker, navigation controls)
+- [ ] Build Sync Status page (data table, filters, pagination, custom dropdown)
+- [ ] Build Vitals page (metrics, filters, custom dropdown)
+- [ ] Implement modern hover effects for all date navigation controls
+
+## 5. Profile & Settings
+- [ ] Build Profile page (nickname, full name, password change)
+- [ ] Build Settings page (custom dropdowns for user count logic and theme)
+- [ ] Ensure all dropdowns are custom, not native <select>
+
+## 6. Admin Panel
+- [ ] Build Admin Login page (yellow accent label)
+- [ ] Build Admin Panel (user management, all fields required, yellow accent label)
+
+## 7. UI/UX Consistency
+- [ ] Ensure all buttons, dropdowns, and controls have consistent sizing, spacing, and focus/hover states
+- [ ] Ensure accessibility (focus outlines, keyboard navigation, color contrast)
+
+## 8. Testing
+- [ ] Write E2E tests (Playwright) for all flows, using click for dropdowns
+- [ ] Write frontend unit tests (Vitest) for all components and logic 

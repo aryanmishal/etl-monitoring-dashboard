@@ -4,7 +4,7 @@ import os
 import shutil
 import gzip
 import json
-from datetime import datetime
+from datetime import datetime, UTC
 
 def read_gzipped_json(filename):
     with gzip.open(filename, 'rt', encoding='utf-8') as f:
@@ -25,7 +25,7 @@ def extract_user_and_date_from_filename(filename):
     timestamp = parts[1].replace('.gz', '')  # Remove .gz extension
     # Convert UTC ms timestamp to YYYY-MM-DD
     try:
-        dt = datetime.utcfromtimestamp(int(timestamp) / 1000)
+        dt = datetime.fromtimestamp(int(timestamp) / 1000, UTC)
         date_str = dt.strftime('%Y-%m-%d')
     except Exception as e:
         print(f"Error converting timestamp {timestamp} for {filename}: {e}")

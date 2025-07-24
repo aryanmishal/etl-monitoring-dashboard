@@ -54,31 +54,40 @@ After logging in, use the navigation bar to access:
 - **Settings**: Change your preferences (analytics logic, custom user count, theme)
 - **Admin**: (If you have admin access) Manage users and system settings
 
+### Navigation Bar & UI
+- The navigation bar features pill-shaped, grey-only navigation buttons (Summary, Sync Status, Vitals) with instant hover/active feedback (no yellow accent). The profile menu is always in the top right, opening under the navbar with modern styling and spacing.
+- Admin/user labels (e.g., "Login Portal", "Admin Access", "Admin Panel") use yellow accent for emphasis, but navigation and controls use only greys.
+
 ## Summary Page
 - View daily, weekly, or monthly analytics for ETL processes
 - Use the date picker to select the period you want to analyze
 - Switch between different views (daily/weekly/monthly)
+- Calendar, next, and previous date buttons have a modern hover effect (light grey background, subtle shadow)
 - If you have custom user settings (e.g., custom user count), set them in Settings and see the analytics update accordingly
 
 ## Sync Status Page
 - View the status of all ETL sync processes (available, missing)
 - See historical sync data for all users
 - Use pagination or filters to navigate records
+- Data filter dropdowns use a custom dropdown (not native <select>); click to open, then click the option
 
 ## Vitals Page
 - Monitor key health metrics for users and the system
 - Quickly spot issues or bottlenecks in the ETL pipeline
+- Date navigation controls have a modern hover effect
 
 ## Profile & Settings
 - **Profile**: Update your personal information (nickname, full name) and change your password
 - **Settings**: Change your preferences, such as analytics logic (raw files or custom user count) and theme (light/dark)
 - All changes are saved and applied to analytics and dashboard views
+- Settings and filter dropdowns are custom (not native <select>); click to open, then click the option
 
 ## Admin Panel
 *For users with admin access only:*
 - Manage user accounts (add, edit, or remove users)
 - Access the Admin Login page to authenticate as an admin if required
 - View and update system settings
+- Admin labels use yellow accent for emphasis
 
 ## Troubleshooting
 
@@ -100,6 +109,8 @@ After logging in, use the navigation bar to access:
    - Check internet speed
    - Reduce data load
    - Contact support if persistent
+5. **Dropdown Interaction**
+   - If you cannot interact with a dropdown using keyboard navigation, use mouse click to open and select.
 
 ### Getting Help
 1. Check the FAQ section
@@ -128,3 +139,5 @@ For additional support:
 4. Email: aryanmishal@outlook.com
 
 ---
+**Testing Note:**
+- When writing E2E tests, interact with dropdowns by clicking the button and then the option, not by using `.selectOption()`.

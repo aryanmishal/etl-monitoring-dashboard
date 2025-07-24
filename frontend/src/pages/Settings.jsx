@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import api from '../api';
+import CustomDropdown from '../components/CustomDropdown';
 
 export default function Settings() {
   const [userCountLogic, setUserCountLogic] = useState('raw_files');
@@ -131,13 +132,17 @@ export default function Settings() {
 
   return (
     <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-md mt-8">
-      {/* Error notification at top right */}
-      {message && (message.toLowerCase().includes('error') || message.toLowerCase().includes('please enter')) && (
+      {/* Notification at top right for any message */}
+      {message && (
         <div
-          className="fixed top-6 right-6 z-50 bg-red-100 border border-red-400 text-red-800 px-6 py-3 rounded-lg shadow-lg text-lg flex items-center gap-2 animate-fade-in"
+          className={`fixed top-6 right-6 z-50 px-6 py-3 rounded-lg shadow-lg text-lg flex items-center gap-2 animate-fade-in border ${
+            message.toLowerCase().includes('error') || message.toLowerCase().includes('please enter')
+              ? 'bg-red-100 border-red-400 text-red-800'
+              : 'bg-green-100 border-green-400 text-green-800'
+          }`}
           style={{ minWidth: 240 }}
         >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mr-2 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 5.636l-1.414-1.414A9 9 0 105.636 18.364l1.414 1.414A9 9 0 1018.364 5.636z" />
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01" />
           </svg>
@@ -164,19 +169,15 @@ export default function Settings() {
           </div>
           
           <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Calculation Method
-              </label>
-              <select
-                value={userCountLogic}
-                onChange={(e) => setUserCountLogic(e.target.value)}
-                className="w-full border border-gray-300 rounded-md px-4 py-2 pr-8 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-gray-500"
-              >
-                <option value="raw_files">Raw Files (Default)</option>
-                <option value="custom_input">Custom Input</option>
-              </select>
-            </div>
+            <CustomDropdown
+              value={userCountLogic}
+              onChange={setUserCountLogic}
+              options={[
+                { value: 'raw_files', label: 'Raw Files (Default)' },
+                { value: 'custom_input', label: 'Custom Input' },
+              ]}
+              className="w-full h-12"
+            />
             
             {userCountLogic === 'custom_input' && (
               <div>
@@ -227,16 +228,14 @@ export default function Settings() {
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Theme
-            </label>
-            <select
+            <CustomDropdown
               value={theme}
-              onChange={e => setTheme(e.target.value)}
-              className="w-full border border-gray-300 rounded-md px-4 py-2 pr-8 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-gray-500"
-            >
-              <option value="light">Light Mode (Default)</option>
-            </select>
+              onChange={setTheme}
+              options={[
+                { value: 'light', label: 'Light Mode (Default)' },
+              ]}
+              className="w-full h-12"
+            />
           </div>
         </div>
         

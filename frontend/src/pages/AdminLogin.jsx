@@ -47,7 +47,7 @@ export default function AdminLogin() {
             <span className="text-white text-3xl font-bold tracking-wide leading-none">
               ETL Monitoring
             </span>
-            <span className="text-white text-xl font-semibold tracking-wide leading-none opacity-90">
+            <span className="text-white text-xl font-semibold tracking-wide leading-none opacity-90" style={{ color: '#fbbf24' }}>
               Admin Access
             </span>
           </div>
@@ -71,7 +71,9 @@ export default function AdminLogin() {
       {/* Login Card - Centered */}
       <div className="flex justify-center items-center min-h-screen">
         <div className="login-card dark-theme-card">
-          <h1 className="dark-card-title">Admin Access</h1>
+          <h1 className="dark-card-title">
+            Admin Access
+          </h1>
           <form onSubmit={handleAccess} className="login-form">
             <div className="form-field">
               <label className="form-label dark-label">Enter Admin Access Code:</label>

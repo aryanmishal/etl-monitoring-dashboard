@@ -2,7 +2,7 @@ from deltalake import DeltaTable
 import pandas as pd
 import os
 import json
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, UTC
 import calendar
 
 # Update BASE_DIR to point to the correct delta_tables directory
@@ -48,7 +48,7 @@ def get_aggregated_summary(date_list, period_type):
                 user_id, rest = fname.split('_', 1)
                 ingestion_date = rest.split('_')[0].split('.')[0]
                 try:
-                    dt = datetime.utcfromtimestamp(int(ingestion_date) / 1000)
+                    dt = datetime.fromtimestamp(int(ingestion_date) / 1000, UTC)
                     date_str_file = dt.strftime('%Y-%m-%d')
                 except Exception:
                     date_str_file = ''
@@ -284,8 +284,7 @@ def get_summary(date_str: str) -> dict:
             user_id, rest = fname.split('_', 1)
             ingestion_date = rest.split('_')[0].split('.')[0]
             try:
-                from datetime import datetime
-                dt = datetime.utcfromtimestamp(int(ingestion_date) / 1000)
+                dt = datetime.fromtimestamp(int(ingestion_date) / 1000, UTC)
                 date_str_file = dt.strftime('%Y-%m-%d')
             except Exception:
                 date_str_file = ''

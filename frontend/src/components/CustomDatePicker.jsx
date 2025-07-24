@@ -345,9 +345,20 @@ const CustomDatePicker = ({ value, onChange, label, className, highlightDates = 
       try {
         const apiDate = formatDateForAPI(formatted);
         const date = new Date(apiDate + 'T12:00:00');
-        // Validate that the date is valid
+        const today = new Date();
+        today.setHours(0,0,0,0);
         if (!isNaN(date.getTime())) {
-          onChange({ target: { value: apiDate } });
+          // If future date, revert to today
+          if (date.setHours(0,0,0,0) > today.getTime()) {
+            const yearStr = today.getFullYear();
+            const monthStr = String(today.getMonth() + 1).padStart(2, '0');
+            const dayStr = String(today.getDate()).padStart(2, '0');
+            const todayStr = `${yearStr}-${monthStr}-${dayStr}`;
+            setInputValue(formatDateForDisplay(todayStr));
+            onChange({ target: { value: todayStr } });
+          } else {
+            onChange({ target: { value: apiDate } });
+          }
         }
       } catch (error) {
         // Invalid date format, ignore
@@ -363,10 +374,21 @@ const CustomDatePicker = ({ value, onChange, label, className, highlightDates = 
         if (/^\d{2}-\d{2}-\d{4}$/.test(inputValue)) {
           const apiDate = formatDateForAPI(inputValue);
           const date = new Date(apiDate + 'T12:00:00');
-          
+          const today = new Date();
+          today.setHours(0,0,0,0);
           if (!isNaN(date.getTime())) {
-            // Valid date, update the value
-            onChange({ target: { value: apiDate } });
+            // If future date, revert to today
+            if (date.setHours(0,0,0,0) > today.getTime()) {
+              const yearStr = today.getFullYear();
+              const monthStr = String(today.getMonth() + 1).padStart(2, '0');
+              const dayStr = String(today.getDate()).padStart(2, '0');
+              const todayStr = `${yearStr}-${monthStr}-${dayStr}`;
+              setInputValue(formatDateForDisplay(todayStr));
+              onChange({ target: { value: todayStr } });
+            } else {
+              // Valid date, update the value
+              onChange({ target: { value: apiDate } });
+            }
           } else {
             // Invalid date, reset to current value
             setInputValue(formatDateForDisplay(value || ''));
@@ -385,6 +407,14 @@ const CustomDatePicker = ({ value, onChange, label, className, highlightDates = 
     }
   };
 
+  // Utility to check if a date is in the future
+  const isFutureDate = (dateObj) => {
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    // Only disable if date is strictly after today
+    return dateObj.setHours(0,0,0,0) > today.getTime();
+  };
+
   return (
     <div ref={pickerRef} className="relative" style={{ position: 'relative', zIndex: 1 }}>
       <div className="flex items-center">
@@ -400,13 +430,22 @@ const CustomDatePicker = ({ value, onChange, label, className, highlightDates = 
         <button
           type="button"
           onClick={() => setIsOpen(!isOpen)}
-          className="ml-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-gray-500"
+          className="ml-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-gray-500 calendar-btn"
           style={{ 
             height: '40px', 
             width: '40px',
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'center'
+            justifyContent: 'center',
+            transition: 'background 0.18s, box-shadow 0.18s'
+          }}
+          onMouseOver={e => {
+            e.currentTarget.style.background = '#f3f4f6';
+            e.currentTarget.style.boxShadow = '0 2px 8px 0 rgba(55,65,81,0.10)';
+          }}
+          onMouseOut={e => {
+            e.currentTarget.style.background = '';
+            e.currentTarget.style.boxShadow = '';
           }}
         >
           <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -457,15 +496,24 @@ const CustomDatePicker = ({ value, onChange, label, className, highlightDates = 
               {months.map((month, index) => {
                 const isCurrentMonth = currentDate.getMonth() === index;
                 const isSelectedMonth = selectedDate && selectedDate.getMonth() === index && selectedDate.getFullYear() === currentDate.getFullYear();
+                // Compute the first day of this month in the current year
+                const monthDate = new Date(currentDate.getFullYear(), index, 1, 12, 0, 0, 0);
+                const future = isFutureDate(monthDate.setMonth(index));
+                // Only allow months up to the current month of the current year
+                const isAfterCurrentMonth = monthDate.getFullYear() > (new Date()).getFullYear() ||
+                  (monthDate.getFullYear() === (new Date()).getFullYear() && index > (new Date()).getMonth());
                 return (
                   <button
                     key={index}
-                    onClick={() => handleMonthSelect(index)}
+                    onClick={() => !isAfterCurrentMonth && handleMonthSelect(index)}
                     className={`
                               p-3 text-xs rounded hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-all duration-200 min-h-[40px] flex items-center justify-center
         ${isSelectedMonth ? 'bg-gray-500 text-white hover:bg-gray-600 shadow-md scale-105' : 'text-gray-900 hover:bg-gray-50'}
                       ${isCurrentMonth ? 'font-semibold' : ''}
+        ${isAfterCurrentMonth ? 'opacity-40 cursor-not-allowed' : ''}
                     `}
+                    disabled={isAfterCurrentMonth}
+                    tabIndex={isAfterCurrentMonth ? -1 : 0}
                   >
                     {month}
                   </button>
@@ -543,17 +591,41 @@ const CustomDatePicker = ({ value, onChange, label, className, highlightDates = 
                   } else {
                     isVisuallySelected = day.isSelected;
                   }
+                  // Compute the actual date for this button
+                  let btnDate;
+                  if (day.isCurrentMonth) {
+                    btnDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), day.day, 12, 0, 0, 0);
+                  } else {
+                    const firstDay = getFirstDayOfMonth(currentDate);
+                    const adjustedFirstDay = firstDay === 0 ? 6 : firstDay - 1;
+                    const idx = index;
+                    if (idx < adjustedFirstDay) {
+                      // prev month
+                      const prevMonth = currentDate.getMonth() === 0 ? 11 : currentDate.getMonth() - 1;
+                      const prevYear = currentDate.getMonth() === 0 ? currentDate.getFullYear() - 1 : currentDate.getFullYear();
+                      btnDate = new Date(prevYear, prevMonth, day.day, 12, 0, 0, 0);
+                    } else {
+                      // next month
+                      const nextMonth = currentDate.getMonth() === 11 ? 0 : currentDate.getMonth() + 1;
+                      const nextYear = currentDate.getMonth() === 11 ? currentDate.getFullYear() + 1 : currentDate.getFullYear();
+                      btnDate = new Date(nextYear, nextMonth, day.day, 12, 0, 0, 0);
+                    }
+                  }
+                  const future = isFutureDate(btnDate);
                   return (
                     <button
                       key={index}
-                      onClick={() => handleDateSelect(day.day, day.isCurrentMonth)}
+                      onClick={() => !future && handleDateSelect(day.day, day.isCurrentMonth)}
                       className={`
                         p-2 text-sm rounded hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-all duration-200 relative z-10
                         ${day.isCurrentMonth ? 'text-gray-900' : 'text-gray-400'}
                         ${isVisuallySelected ? 'bg-gray-500 text-white hover:bg-gray-600 shadow-md scale-105' : ''}
                         ${viewMode === 'week' && day.isHighlighted && !isVisuallySelected ? 'text-gray-800' : ''}
                         ${viewMode !== 'week' && day.isHighlighted && !isVisuallySelected ? 'bg-gradient-to-br from-green-50 to-green-100 border-2 border-green-400 shadow-sm font-medium text-green-800 hover:bg-gradient-to-br hover:from-green-100 hover:to-green-200' : ''}
+                        ${future ? 'opacity-40 cursor-not-allowed' : ''}
                       `}
+                      disabled={future}
+                      tabIndex={future ? -1 : 0}
                     >
                       {day.day}
                     </button>

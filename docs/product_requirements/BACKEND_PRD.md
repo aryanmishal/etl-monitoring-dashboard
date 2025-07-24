@@ -1,4 +1,5 @@
-# Backend Product Requirements Document (PRD)
+# Backend Product Requirements Document (Merged)
+
 ## ETL Monitoring Application - Backend Component
 
 ---
@@ -368,3 +369,39 @@ This backend system supports the organization's data strategy by:
 ---
 
 *This PRD is a living document and will be updated as requirements evolve and new insights are gained from development progress and user feedback.* 
+
+# AI Build Task List (Tasks & Subtasks)
+
+## 1. Project Setup
+- [ ] Initialize FastAPI project, configure Uvicorn, set up MySQL and Delta Lake
+- [ ] Set up environment variables and configuration files
+
+## 2. Authentication & User Management
+- [ ] Implement JWT-based authentication (register, login, password reset)
+- [ ] Implement user roles (admin, user)
+- [ ] Implement admin endpoints for user management
+
+## 3. ETL Data Processing
+- [ ] Implement data ingestion scripts (load bronze, silver, etc.)
+- [ ] Implement data validation, transformation, and storage logic
+- [ ] Ensure no future dates are accepted in data processing logic
+
+## 4. API Endpoints
+- [ ] Implement endpoints for summary, sync status, user vitals, user settings
+- [ ] Implement robust error handling and input validation
+- [ ] Ensure API matches frontend requirements for summary subtitles, date logic, and user settings
+
+## 5. Logic & Integration
+- [ ] Ensure date logic matches frontend (no future dates, correct summary subtitles)
+- [ ] Implement logic for custom user count and settings
+- [ ] Integrate with Delta Lake and MySQL for all data flows
+
+## 6. Testing
+- [ ] Write backend API tests (Pytest) for all endpoints and logic
+- [ ] Ensure database and service logic are covered
+- [ ] Add E2E integration tests for critical flows
+
+## 7. Monitoring & Maintenance
+- [ ] Implement logging, monitoring, and alerting
+- [ ] Document all endpoints and logic
+- [ ] Set up regular security audits and performance monitoring 

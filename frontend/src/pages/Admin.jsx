@@ -51,6 +51,7 @@ function UserForm({ onSubmit, onCancel, initial, apiError, setApiError }) {
   const [nickname, setNickname] = useState(initial?.nickname || '');
   const [fullName, setFullName] = useState(initial?.full_name || '');
   const [emailError, setEmailError] = useState('');
+  const [fieldError, setFieldError] = useState('');
 
   const validateEmail = (email) => {
     // Simple email regex
@@ -59,11 +60,17 @@ function UserForm({ onSubmit, onCancel, initial, apiError, setApiError }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!username || !fullName || !nickname || (!initial && !password)) {
+      setFieldError('All fields are required.');
+      return;
+    }
     if (!validateEmail(username)) {
       setEmailError('Please enter a valid email address.');
+      setFieldError('');
       return;
     }
     setEmailError('');
+    setFieldError('');
     setApiError && setApiError('');
     onSubmit({ username, password, nickname, full_name: fullName });
   };
@@ -92,21 +99,21 @@ function UserForm({ onSubmit, onCancel, initial, apiError, setApiError }) {
         {!initial && (
           <div className="flex flex-col w-full">
             <label className="mb-1 text-xs font-semibold text-gray-700" htmlFor="password">Password</label>
-            <input className="custom-input dark-input" id="password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} type="password" autoComplete="new-password" />
+            <input className="custom-input dark-input" id="password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} type="password" autoComplete="new-password" required />
           </div>
         )}
         <div className="flex flex-col w-full">
           <label className="mb-1 text-xs font-semibold text-gray-700" htmlFor="fullname">Full Name</label>
-          <input className="custom-input dark-input" id="fullname" placeholder="Full Name" value={fullName} onChange={e => setFullName(e.target.value)} />
+          <input className="custom-input dark-input" id="fullname" placeholder="Full Name" value={fullName} onChange={e => setFullName(e.target.value)} required />
         </div>
         <div className="flex flex-col w-full">
           <label className="mb-1 text-xs font-semibold text-gray-700" htmlFor="nickname">Nickname</label>
-          <input className="custom-input dark-input" id="nickname" placeholder="Nickname" value={nickname} onChange={e => setNickname(e.target.value)} />
+          <input className="custom-input dark-input" id="nickname" placeholder="Nickname" value={nickname} onChange={e => setNickname(e.target.value)} required />
         </div>
       </div>
-      {apiError && (
+      {(apiError || fieldError) && (
         <div className="mb-4 text-sm text-red-600 bg-red-50 border border-red-200 rounded px-4 py-2 font-medium">
-          {apiError}
+          {apiError || fieldError}
         </div>
       )}
       <div className="flex gap-3 justify-end mt-6">
@@ -305,12 +312,12 @@ export default function Admin() {
                 ETL Monitoring
               </span>
               <span style={{
-                color: '#ffffff',
+                color: '#fbbf24',
                 fontSize: '1rem',
                 fontWeight: '600',
                 letterSpacing: '0.025em',
                 lineHeight: '1',
-                opacity: '0.9'
+                opacity: '0.95'
               }}>
                 Admin Panel
               </span>

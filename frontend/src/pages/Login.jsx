@@ -97,7 +97,7 @@ export default function Login({ setToken }) {
             <span className="text-white text-3xl font-bold tracking-wide leading-none">
               ETL Monitoring
             </span>
-            <span className="text-white text-xl font-semibold tracking-wide leading-none opacity-90">
+            <span className="text-white text-xl font-semibold tracking-wide leading-none opacity-90" style={{ color: '#fbbf24' }}>
               Login Portal
             </span>
           </div>
