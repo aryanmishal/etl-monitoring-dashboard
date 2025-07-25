@@ -498,10 +498,11 @@ const CustomDatePicker = ({ value, onChange, label, className, highlightDates = 
                 const isSelectedMonth = selectedDate && selectedDate.getMonth() === index && selectedDate.getFullYear() === currentDate.getFullYear();
                 // Compute the first day of this month in the current year
                 const monthDate = new Date(currentDate.getFullYear(), index, 1, 12, 0, 0, 0);
-                const future = isFutureDate(monthDate.setMonth(index));
-                // Only allow months up to the current month of the current year
-                const isAfterCurrentMonth = monthDate.getFullYear() > (new Date()).getFullYear() ||
-                  (monthDate.getFullYear() === (new Date()).getFullYear() && index > (new Date()).getMonth());
+                // Fix: do NOT mutate monthDate, use a new Date for the future check
+                const now = new Date();
+                const isAfterCurrentMonth =
+                  monthDate.getFullYear() > now.getFullYear() ||
+                  (monthDate.getFullYear() === now.getFullYear() && index > now.getMonth());
                 return (
                   <button
                     key={index}

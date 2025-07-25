@@ -147,3 +147,15 @@ Access the API documentation at:
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
+
+---
+
+**Note:**
+The setup instructions above will work provided:
+- MySQL is installed, running, and accessible with the credentials you provide in your `.env` files.
+- You create the required `.env` files in both the backend and frontend directories as described.
+- You install all Python and Node.js dependencies using the provided commands.
+- You run the SQL script (`backend/config/setup_database.sql`) to initialize the database before starting the backend server.
+- You do not commit your `.env` files or other sensitive information to version control (see the included `.gitignore` files).
+
+If you follow these steps, the project should run successfully on your system.
