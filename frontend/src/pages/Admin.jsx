@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { validatePassword } from '../utils/passwordValidation';
+import PasswordStrengthIndicator from '../components/PasswordStrengthIndicator';
 
 function UserTable({ users, onEdit, onDelete }) {
   return (
@@ -69,6 +71,17 @@ function UserForm({ onSubmit, onCancel, initial, apiError, setApiError }) {
       setFieldError('');
       return;
     }
+    
+    // Validate password strength for new users
+    if (!initial && password) {
+      const passwordValidation = validatePassword(password);
+      if (!passwordValidation.isValid) {
+        setFieldError('Password does not meet security requirements. Please check the requirements below.');
+        setEmailError('');
+        return;
+      }
+    }
+    
     setEmailError('');
     setFieldError('');
     setApiError && setApiError('');
@@ -82,7 +95,7 @@ function UserForm({ onSubmit, onCancel, initial, apiError, setApiError }) {
     >
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
         <div className="flex flex-col w-full">
-          <label className="mb-1 text-xs font-semibold text-gray-700" htmlFor="username">Username (Email)</label>
+          <label className="mb-1 text-xs font-semibold text-gray-700" htmlFor="username">Username (Email) <span className="text-red-500">*</span></label>
           <input
             className="custom-input dark-input"
             id="username"
@@ -98,16 +111,17 @@ function UserForm({ onSubmit, onCancel, initial, apiError, setApiError }) {
         </div>
         {!initial && (
           <div className="flex flex-col w-full">
-            <label className="mb-1 text-xs font-semibold text-gray-700" htmlFor="password">Password</label>
+            <label className="mb-1 text-xs font-semibold text-gray-700" htmlFor="password">Password <span className="text-red-500">*</span></label>
             <input className="custom-input dark-input" id="password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} type="password" autoComplete="new-password" required />
+            {password && <PasswordStrengthIndicator password={password} />}
           </div>
         )}
         <div className="flex flex-col w-full">
-          <label className="mb-1 text-xs font-semibold text-gray-700" htmlFor="fullname">Full Name</label>
+          <label className="mb-1 text-xs font-semibold text-gray-700" htmlFor="fullname">Full Name <span className="text-red-500">*</span></label>
           <input className="custom-input dark-input" id="fullname" placeholder="Full Name" value={fullName} onChange={e => setFullName(e.target.value)} required />
         </div>
         <div className="flex flex-col w-full">
-          <label className="mb-1 text-xs font-semibold text-gray-700" htmlFor="nickname">Nickname</label>
+          <label className="mb-1 text-xs font-semibold text-gray-700" htmlFor="nickname">Nickname <span className="text-red-500">*</span></label>
           <input className="custom-input dark-input" id="nickname" placeholder="Nickname" value={nickname} onChange={e => setNickname(e.target.value)} required />
         </div>
       </div>
@@ -135,6 +149,7 @@ export default function Admin() {
   const [editUser, setEditUser] = useState(null);
   const [apiError, setApiError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+  const [searchDisplay, setSearchDisplay] = useState('');
   const [search, setSearch] = useState('');
   const [pendingDelete, setPendingDelete] = useState(null);
   const [page, setPage] = useState(1);
@@ -400,16 +415,23 @@ export default function Admin() {
               </span>
               <input
                 type="text"
-                value={search}
-                onChange={e => setSearch(e.target.value)}
+                value={searchDisplay}
+                onChange={e => {
+                  const value = e.target.value;
+                  // Prevent starting with space, but allow spaces after content
+                  if (value === '' || !value.startsWith(' ')) {
+                    setSearchDisplay(value);
+                    setSearch(value.trimEnd());
+                  }
+                }}
                 placeholder="Search users..."
-                className="border pr-8 py-2 rounded focus:outline-none focus:ring-2 focus:ring-gray-600 text-sm"
+                className="border pr-8 py-2 rounded focus:outline-none focus:ring-2 px-3 rounded text-base focus:outline-none focus:ring-2 focus:ring-gray-600"
                 style={{ minWidth: '180px', paddingLeft: '2.75rem' }}
               />
-              {search && (
+              {searchDisplay && (
                 <button
                   type="button"
-                  onClick={() => setSearch('')}
+                  onClick={() => { setSearchDisplay(''); setSearch(''); }}
                   className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none"
                   style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
                   tabIndex={-1}

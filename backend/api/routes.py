@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Query, Depends, HTTPException, Header, Body
+from fastapi import APIRouter, Query, Depends, HTTPException, Header, Body, Response
 from services.delta_reader import (
     get_data_sync_status,
     get_user_vitals_status,
@@ -6,6 +6,7 @@ from services.delta_reader import (
     get_weekly_summary,
     get_monthly_summary
 )
+from services.excel_export import create_summary_excel
 from datetime import datetime
 from .auth_routes import auth_router
 from typing import Dict, Any, Optional
@@ -14,6 +15,7 @@ from config.database import get_db_connection
 from jose import jwt, JWTError
 from config.database import SECRET_KEY, ALGORITHM
 from services.auth_service import get_user_by_username
+from utils.password_validation import validate_password
 
 router = APIRouter()
 router.include_router(auth_router, prefix="/auth")
@@ -242,6 +244,87 @@ def monthly_summary(date: str = Query(default=datetime.today().strftime('%Y-%m-%
         summary_data['page_size'] = page_size
     return {"date": date, **summary_data}
 
+@router.get("/summary/export")
+def export_summary_excel(
+    date: str = Query(default=datetime.today().strftime('%Y-%m-%d')),
+    view_type: str = Query(default="daily", regex="^(daily|weekly|monthly)$"),
+    current_user: dict = Depends(get_current_user)
+):
+    """Export summary data to Excel file"""
+    try:
+        print(f"Export request - Date: {date}, View Type: {view_type}, User: {current_user['username']}")
+        
+        # Get summary data based on view type
+        if view_type == "weekly":
+            summary_data = get_weekly_summary(date)
+        elif view_type == "monthly":
+            summary_data = get_monthly_summary(date)
+        else:
+            summary_data = get_summary(date)
+        
+        print(f"Summary data retrieved: {summary_data}")
+        
+        # Get user settings for custom user count
+        try:
+            conn = get_db_connection()
+            cursor = conn.cursor(dictionary=True)
+            
+            cursor.execute("""
+                SELECT setting_key, setting_value 
+                FROM user_settings 
+                WHERE user_id = %s AND setting_key = 'user_count_logic'
+            """, (current_user['id'],))
+            
+            user_count_logic_result = cursor.fetchone()
+            user_count_logic = user_count_logic_result['setting_value'] if user_count_logic_result else 'default'
+            
+            if user_count_logic == 'custom_input':
+                cursor.execute("""
+                    SELECT setting_key, setting_value 
+                    FROM user_settings 
+                    WHERE user_id = %s AND setting_key = 'custom_user_count'
+                """, (current_user['id'],))
+                
+                custom_count_result = cursor.fetchone()
+                if custom_count_result:
+                    custom_count = int(custom_count_result['setting_value'])
+                    summary_data['total_users'] = custom_count
+            
+            cursor.close()
+            conn.close()
+        except Exception as e:
+            print(f"Error applying user settings: {e}")
+        
+        # Generate date range string
+        if view_type == "daily":
+            date_range = summary_data.get('date', date)
+        elif view_type == "weekly":
+            date_range = summary_data.get('date_range', f"Week of {date}")
+        else:  # monthly
+            date_range = summary_data.get('date_range', f"Month of {date}")
+        
+        print(f"Creating Excel file with date range: {date_range}")
+        
+        # Create Excel file
+        excel_data = create_summary_excel(summary_data, view_type, date_range)
+        
+        # Generate filename
+        filename = f"etl_summary_{view_type}_{date}.xlsx"
+        
+        print(f"Excel file created successfully, size: {len(excel_data)} bytes")
+        
+        return Response(
+            content=excel_data,
+            media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            headers={"Content-Disposition": f"attachment; filename={filename}"}
+        )
+        
+    except Exception as e:
+        print(f"Error in export_summary_excel: {e}")
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"Failed to export Excel file: {str(e)}")
+
 @router.get("/user-settings")
 def get_user_settings(current_user: dict = Depends(get_current_user)):
     try:
@@ -330,6 +413,12 @@ def admin_add_user(data: dict = Body(...)):
     full_name = data.get('full_name')
     if not username or not password:
         return {"error": "Username and password are required."}
+    
+    # Validate password strength
+    is_valid, errors, warnings = validate_password(password)
+    if not is_valid:
+        return {"error": f"Password validation failed: {'; '.join(errors)}"}
+    
     import bcrypt
     hashed = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
     conn = get_db_connection()
@@ -354,6 +443,13 @@ def admin_update_user(user_id: int, data: dict = Body(...)):
     password = data.get('password')
     nickname = data.get('nickname')
     full_name = data.get('full_name')
+    
+    # Validate password strength if password is being updated
+    if password:
+        is_valid, errors, warnings = validate_password(password)
+        if not is_valid:
+            return {"error": f"Password validation failed: {'; '.join(errors)}"}
+    
     conn = get_db_connection()
     cursor = conn.cursor()
     try:

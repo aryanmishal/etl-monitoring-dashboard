@@ -76,7 +76,7 @@ export default function AdminLogin() {
           </h1>
           <form onSubmit={handleAccess} className="login-form">
             <div className="form-field">
-              <label className="form-label dark-label">Enter Admin Access Code:</label>
+              <label className="form-label dark-label">Enter Admin Access Code: <span className="text-red-500">*</span></label>
               <input
                 type="password"
                 value={code}

@@ -1,6 +1,8 @@
 import { useEffect, useState, useRef } from 'react';
 import { getProfile } from '../api';
 import api from '../api';
+import { validatePassword } from '../utils/passwordValidation';
+import PasswordStrengthIndicator from '../components/PasswordStrengthIndicator';
 
 export default function Profile() {
   const [profile, setProfile] = useState(null);
@@ -104,6 +106,15 @@ export default function Profile() {
     setPasswordSaving(true);
     setPasswordError(null);
     setPasswordSuccess(null);
+    
+    // Validate password strength
+    const passwordValidation = validatePassword(password);
+    if (!passwordValidation.isValid) {
+      setPasswordError('Password does not meet security requirements. Please check the requirements below.');
+      setPasswordSaving(false);
+      return;
+    }
+    
     try {
       await api.put('/api/auth/profile/password', { password });
       setPassword('');
@@ -308,6 +319,7 @@ export default function Profile() {
                   </div>
                 ) : (
                   <div className="flex flex-col gap-2 mt-2">
+                    <label className="text-sm font-medium text-gray-700">New Password <span className="text-red-500">*</span></label>
                     <input
                       type="password"
                       name="password"
@@ -316,6 +328,7 @@ export default function Profile() {
                       className="custom-input"
                       placeholder="Enter new password"
                     />
+                    {password && <PasswordStrengthIndicator password={password} />}
                     <div className="flex gap-2">
                       <button
                         className="btn btn-active"

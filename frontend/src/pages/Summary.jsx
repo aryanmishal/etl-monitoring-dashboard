@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import api from "../api";
 import CustomDatePicker from "../components/CustomDatePicker";
 import { getTodayDate, formatDateForDisplay, addDays, addWeeks, addMonths } from "../utils/dateUtils";
+import * as XLSX from 'xlsx';
 
 // Function to get week dates for a given date (Monday as first day)
 const getWeekDates = (dateStr) => {
@@ -49,6 +50,7 @@ export default function Summary() {
   const [loading, setLoading] = useState(false);
   const [userSettings, setUserSettings] = useState(null);
   const [settingsLoaded, setSettingsLoaded] = useState(false);
+  const [exporting, setExporting] = useState(false);
 
   // Load user settings on component mount
   useEffect(() => {
@@ -99,6 +101,51 @@ export default function Summary() {
       setSummary(null);
     }
     setLoading(false);
+  };
+
+  const exportToExcel = async () => {
+    if (!summary) return;
+    
+    setExporting(true);
+    try {
+      const response = await api.get('/api/summary/export', {
+        params: { 
+          date: date,
+          view_type: viewType
+        },
+        responseType: 'blob'
+      });
+      
+      // Create download link
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `etl_summary_${viewType}_${date}.xlsx`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Error exporting to Excel:', error);
+      
+      // More detailed error handling
+      let errorMessage = 'Failed to export Excel file.';
+      if (error.response) {
+        if (error.response.status === 401) {
+          errorMessage = 'Authentication failed. Please log in again.';
+        } else if (error.response.status === 500) {
+          errorMessage = 'Server error. Please try again later.';
+        } else {
+          errorMessage = `Export failed (${error.response.status}). Please try again.`;
+        }
+      } else if (error.request) {
+        errorMessage = 'Network error. Please check your connection.';
+      }
+      
+      alert(errorMessage);
+    } finally {
+      setExporting(false);
+    }
   };
 
   // Fetch summary only when date, userSettings, or settingsLoaded changes
@@ -296,6 +343,7 @@ export default function Summary() {
             Monthly
           </label>
         </div>
+        
       </div>
 
       {loading ? (
@@ -318,25 +366,56 @@ export default function Summary() {
         </div>
       ) : summary ? (
         <>
-        <div className="summary-card mt-6 bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
-          <div className="bg-gradient-to-r from-gray-600 to-gray-700 px-6 py-4">
-            <h2 className="text-xl font-bold text-white">
-              Summary Report
-            </h2>
-            <p className="text-gray-100 text-sm mt-1">
-              {viewType === 'monthly' && date ? (
-                (() => {
-                  const d = new Date(date + 'T12:00:00');
-                  const monthName = d.toLocaleString('default', { month: 'long' });
-                  const year = d.getFullYear();
-                  return `Monthly View - ${monthName}, ${year}`;
-                })()
-              ) : viewType === 'daily' && (summary?.date || date) ? (
-                `Daily View - ${formatLongDateWithOrdinal(summary?.date || date)}`
+        <div className="summary-card mt-6 bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden relative">
+          <div className="bg-gradient-to-r from-gray-600 to-gray-700 px-6 py-4 flex justify-between items-center">
+            <div>
+              <h2 className="text-xl font-bold text-white">
+                Summary Report
+              </h2>
+              <p className="text-gray-100 text-sm mt-1">
+                {viewType === 'monthly' && date ? (
+                  (() => {
+                    const d = new Date(date + 'T12:00:00');
+                    const monthName = d.toLocaleString('default', { month: 'long' });
+                    const year = d.getFullYear();
+                    return `Monthly View - ${monthName}, ${year}`;
+                  })()
+                ) : viewType === 'daily' && (summary?.date || date) ? (
+                  `Daily View - ${formatLongDateWithOrdinal(summary?.date || date)}`
+                ) : (
+                  `${viewType.charAt(0).toUpperCase() + viewType.slice(1)} View - ${getDateDisplay()}`
+                )}
+              </p>
+            </div>
+            
+            {/* Export Button */}
+            <button
+              onClick={exportToExcel}
+              disabled={!summary || exporting}
+              className={`px-4 py-2 rounded-lg font-semibold transition-all duration-300 flex items-center gap-2 text-sm border ${
+                !summary || exporting
+                  ? 'bg-gray-400 text-gray-200 cursor-not-allowed border-gray-300'
+                  : 'bg-white text-gray-700 hover:bg-gray-50 border-gray-300 hover:border-gray-400 shadow-sm hover:shadow-md'
+              }`}
+              title="Export to Excel"
+            >
+              {exporting ? (
+                <>
+                  <svg className="animate-spin h-4 w-4 text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  <span className="hidden sm:inline">Exporting...</span>
+                </>
               ) : (
-                `${viewType.charAt(0).toUpperCase() + viewType.slice(1)} View - ${getDateDisplay()}`
+                <>
+                  <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                  <span className="hidden sm:inline">Export</span>
+                </>
               )}
-            </p>
+            </button>
           </div>
           
           <div className="p-6">

@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../api';
+import { validatePassword } from '../utils/passwordValidation';
+import PasswordStrengthIndicator from '../components/PasswordStrengthIndicator';
 
 const STATIC_CODE = '123456';
 
@@ -94,6 +96,14 @@ export default function ForgotPassword() {
       setError('Passwords do not match.');
       return;
     }
+    
+    // Validate password strength
+    const passwordValidation = validatePassword(newPassword);
+    if (!passwordValidation.isValid) {
+      setError('Password does not meet security requirements. Please check the requirements below.');
+      return;
+    }
+    
     try {
       await api.post('/api/auth/reset-password', { username: email, new_password: newPassword });
       setSuccess('Password reset successful! You can now log in with your new password.');
@@ -127,7 +137,7 @@ export default function ForgotPassword() {
         {step === 1 && (
           <form onSubmit={handleEmailSubmit} className="login-form">
             <div className="form-field">
-              <label htmlFor="email" className="form-label dark-label">Enter Your Email</label>
+              <label htmlFor="email" className="form-label dark-label">Enter Your Email <span className="text-red-500">*</span></label>
               <input
                 type="email"
                 id="email"
@@ -143,7 +153,7 @@ export default function ForgotPassword() {
         {step === 2 && (
           <form onSubmit={handleCodeSubmit} className="login-form">
             <div className="form-field">
-              <label htmlFor="code" className="form-label dark-label">Enter Verification Code</label>
+              <label htmlFor="code" className="form-label dark-label">Enter Verification Code <span className="text-red-500">*</span></label>
               <input
                 type="text"
                 id="code"
@@ -160,7 +170,7 @@ export default function ForgotPassword() {
         {step === 3 && (
           <form onSubmit={handlePasswordSubmit} className="login-form">
             <div className="form-field">
-              <label htmlFor="newPassword" className="form-label dark-label">Enter New Password</label>
+              <label htmlFor="newPassword" className="form-label dark-label">Enter New Password <span className="text-red-500">*</span></label>
               <input
                 type="password"
                 id="newPassword"
@@ -169,9 +179,10 @@ export default function ForgotPassword() {
                 className="custom-input dark-input"
                 required
               />
+              {newPassword && <PasswordStrengthIndicator password={newPassword} />}
             </div>
             <div className="form-field">
-              <label htmlFor="confirmPassword" className="form-label dark-label">Confirm New Password</label>
+              <label htmlFor="confirmPassword" className="form-label dark-label">Confirm New Password <span className="text-red-500">*</span></label>
               <input
                 type="password"
                 id="confirmPassword"
@@ -180,6 +191,9 @@ export default function ForgotPassword() {
                 className="custom-input dark-input"
                 required
               />
+              {confirmPassword && newPassword !== confirmPassword && (
+                <div className="text-xs text-red-600 mt-1">Passwords do not match</div>
+              )}
             </div>
             <button type="submit" className="custom-button dark-button w-full h-12 capitalize">Reset Password</button>
           </form>

@@ -14,6 +14,7 @@ export default function VitalsStatus() {
   const [totalPages, setTotalPages] = useState(1);
   const [totalUsers, setTotalUsers] = useState(0);
   const [filter, setFilter] = useState('all');
+  const [searchDisplay, setSearchDisplay] = useState('');
   const [search, setSearch] = useState('');
 
   const fetchData = async (selectedDate) => {
@@ -143,16 +144,24 @@ export default function VitalsStatus() {
           </span>
           <input
             type="text"
-            value={search}
-            onChange={e => { setSearch(e.target.value); setPage(1); }}
+            value={searchDisplay}
+            onChange={e => { 
+              const value = e.target.value;
+              // Prevent starting with space, but allow spaces after content
+              if (value === '' || !value.startsWith(' ')) {
+                setSearchDisplay(value);
+                setSearch(value.trimEnd());
+                setPage(1);
+              }
+            }}
             placeholder="Search by User ID"
                           className="h-12 border pr-8 py-2 px-3 rounded text-base focus:outline-none focus:ring-2 focus:ring-gray-600"
             style={{ minWidth: '180px', paddingLeft: '2.75rem' }}
           />
-          {search && (
+          {searchDisplay && (
             <button
               type="button"
-              onClick={() => { setSearch(''); setPage(1); }}
+              onClick={() => { setSearchDisplay(''); setSearch(''); setPage(1); }}
               className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none"
               style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
               tabIndex={-1}
@@ -167,6 +176,14 @@ export default function VitalsStatus() {
 
       {loading ? (
         <p className="mt-4">Loading...</p>
+      ) : !date ? (
+        <div className="mt-4 p-6 bg-gray-50 border border-gray-200 rounded-lg text-center">
+          <svg className="w-12 h-12 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          </svg>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">Please select a date</h3>
+          <p className="text-gray-600">Choose a specific date to view the vitals status report.</p>
+        </div>
       ) : (
         <>
         <div className="overflow-x-auto">

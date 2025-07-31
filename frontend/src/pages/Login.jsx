@@ -109,7 +109,7 @@ export default function Login({ setToken }) {
           <h1 className="dark-card-title">Login</h1>
           <form onSubmit={handleLogin} className="login-form">
             <div className="form-field">
-              <label htmlFor="email" className="form-label dark-label">Email ID</label>
+              <label htmlFor="email" className="form-label dark-label">Email ID <span className="text-red-500">*</span></label>
               <input
                 type="email"
                 id="email"
@@ -120,7 +120,7 @@ export default function Login({ setToken }) {
               />
             </div>
             <div className="form-field">
-              <label htmlFor="password" className="form-label dark-label">Password</label>
+              <label htmlFor="password" className="form-label dark-label">Password <span className="text-red-500">*</span></label>
               <input
                 type="password"
                 id="password"

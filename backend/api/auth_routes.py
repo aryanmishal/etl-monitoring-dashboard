@@ -4,6 +4,7 @@ from services.auth_service import create_user, authenticate_user, create_access_
 from jose import jwt, JWTError
 from config.database import SECRET_KEY, ALGORITHM
 from typing import Optional
+from utils.password_validation import validate_password
 
 auth_router = APIRouter()
 
@@ -28,6 +29,11 @@ class PasswordUpdate(BaseModel):
 
 @auth_router.post("/register")
 def register(user: UserRegister):
+    # Validate password strength
+    is_valid, errors, warnings = validate_password(user.password)
+    if not is_valid:
+        raise HTTPException(status_code=400, detail=f"Password validation failed: {'; '.join(errors)}")
+    
     create_user(user.username, user.password)
     token = create_access_token({"sub": user.username})
     return {"access_token": token, "token_type": "bearer"}
@@ -54,6 +60,12 @@ def check_user(data: UserLogin):
 def reset_password(data: PasswordResetRequest):
     from services.auth_service import get_db
     import bcrypt
+    
+    # Validate password strength
+    is_valid, errors, warnings = validate_password(data.new_password)
+    if not is_valid:
+        raise HTTPException(status_code=400, detail=f"Password validation failed: {'; '.join(errors)}")
+    
     conn = get_db()
     cursor = conn.cursor(dictionary=True)
     cursor.execute("SELECT password_hash FROM users WHERE username=%s", (data.username,))
@@ -161,6 +173,11 @@ def update_user_password(password_data: PasswordUpdate, authorization: Optional[
     """Update user password"""
     if not authorization or not authorization.startswith("Bearer "):
         raise HTTPException(status_code=401, detail="Invalid authorization header")
+    
+    # Validate password strength
+    is_valid, errors, warnings = validate_password(password_data.password)
+    if not is_valid:
+        raise HTTPException(status_code=400, detail=f"Password validation failed: {'; '.join(errors)}")
     
     token = authorization.replace("Bearer ", "")
     try:
